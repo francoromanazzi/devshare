@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 
 import { clearNewProjectRepoUrl } from '../../../store/actions/projectsActions';
 
-import FormRepoSelector from './FormRepoSelector';
-import FormEditProject from './FormEditProject';
+import FormRepoSelector from './step-1/FormRepoSelector';
+import FormEditProject from './step-2/FormEditProject';
+import FormContributors from './step-3/FormContributors';
 
 export class AddProject extends Component {
   state = {
@@ -13,7 +14,7 @@ export class AddProject extends Component {
     repoUrl: '',
     title: '',
     description: '',
-    pictures: [],
+    images: [],
     tags: []
   };
 
@@ -24,9 +25,13 @@ export class AddProject extends Component {
       this.setState({ repoUrl: nextProps.project.repoUrl }, () =>
         clearNewProjectRepoUrl()
       );
-
     if (nextProps.project.title)
       this.setState({ title: nextProps.project.title });
+    if (nextProps.project.description)
+      this.setState({ description: nextProps.project.description });
+    if (nextProps.project.images)
+      this.setState({ images: nextProps.project.images });
+    if (nextProps.project.tags) this.setState({ tags: nextProps.project.tags });
   }
 
   nextStep = () => {
@@ -41,8 +46,10 @@ export class AddProject extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+  onSubmit = e => {};
+
   render() {
-    const { step, repoUrl, title, description, pictures, tags } = this.state;
+    const { step, repoUrl, title, description, images, tags } = this.state;
 
     switch (step) {
       case 1:
@@ -59,14 +66,19 @@ export class AddProject extends Component {
             prevStep={this.prevStep}
             nextStep={this.nextStep}
             handleChange={this.handleChange}
-            values={{ title, description, pictures, tags }}
+            values={{ title, description, images, tags }}
             repoUrl={repoUrl}
           />
         );
       case 3:
-        return <div>Step 3</div>;
-      case 4:
-        return <div>Success</div>;
+        return (
+          <FormContributors
+            prevStep={this.prevStep}
+            onSubmit={this.onSubmit}
+            handleChange={this.handleChange}
+            values={{}}
+          />
+        );
     }
   }
 }

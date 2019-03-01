@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { setNewProjectRepoUrl } from '../../../store/actions/projectsActions';
+import { setNewProjectRepoUrl } from '../../../../store/actions/projectsActions';
 
 import { ListItem, ListItemText } from '@material-ui/core';
 

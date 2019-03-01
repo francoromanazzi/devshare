@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
-import isEmpty from '../../../utils/is-empty';
-import { setError } from '../../../store/actions/errorsActions';
+import isEmpty from '../../../../utils/is-empty';
+import { setError } from '../../../../store/actions/errorsActions';
 
 import {
   withStyles,
@@ -14,7 +14,7 @@ import {
   Typography
 } from '@material-ui/core';
 
-import GridContainer from '../../common/grid-container/GridContainer';
+import GridContainer from '../../../common/grid-container/GridContainer';
 import GithubRepoList from './GithubRepoList';
 
 const styles = {

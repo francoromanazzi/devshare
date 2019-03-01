@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
-import isEmpty from '../../../utils/is-empty';
+import isEmpty from '../../../../utils/is-empty';
 
-import { getReposFromUser } from '../../../store/actions/reposActions';
+import { getReposFromUser } from '../../../../store/actions/reposActions';
 
 import { withStyles, List, Typography } from '@material-ui/core';
-import Spinner from '../../common/spinner/Spinner';
+import Spinner from '../../../common/spinner/Spinner';
 import GithubRepoItem from './GithubRepoItem';
 
 const styles = theme => ({

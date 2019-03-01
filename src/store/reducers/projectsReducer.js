@@ -2,7 +2,11 @@ import {
   SET_NEW_PROJECT_REPO_URL,
   CLEAR_NEW_PROJECT_REPO_URL,
   PROJECTS_LOADING,
-  GET_PROJECT
+  GET_PROJECT,
+  DELETE_TAG_AT_INDEX,
+  ADD_TAG,
+  DELETE_IMAGE_AT_INDEX,
+  ADD_IMAGE
 } from '../actions/types';
 
 const initState = {
@@ -39,6 +43,38 @@ export default function(state = initState, action) {
         ...state,
         project: action.payload.project,
         loading: false
+      };
+    case DELETE_TAG_AT_INDEX:
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          tags: state.project.tags.filter((tag, i) => i !== action.payload)
+        }
+      };
+    case ADD_TAG:
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          tags: [...state.project.tags, action.payload]
+        }
+      };
+    case DELETE_IMAGE_AT_INDEX:
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          images: state.project.images.filter((img, i) => i !== action.payload)
+        }
+      };
+    case ADD_IMAGE:
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          images: [...state.project.images, action.payload]
+        }
       };
     default:
       return state;

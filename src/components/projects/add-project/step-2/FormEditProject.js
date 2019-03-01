@@ -2,18 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import isEmpty from '../../../utils/is-empty';
-import { getFullRepoFromUserByUrl } from '../../../store/actions/projectsActions';
-
+import isEmpty from '../../../../utils/is-empty';
 import {
-  withStyles,
-  Grid,
-  TextField,
-  Button,
-  Typography
-} from '@material-ui/core';
-import GridContainer from '../../common/grid-container/GridContainer';
-import Spinner from '../../common/spinner/Spinner';
+  getFullRepoFromUserByUrl,
+  deleteTagAtIndex
+} from '../../../../store/actions/projectsActions';
+
+import { Grid, Typography, TextField, Button } from '@material-ui/core';
+import GridContainer from '../../../common/grid-container/GridContainer';
+import Spinner from '../../../common/spinner/Spinner';
+import Tags from './Tags';
+import ImageGallery from './ImageGallery';
 
 export class FormEditProject extends Component {
   nextStep = () => {
@@ -28,12 +27,13 @@ export class FormEditProject extends Component {
 
   render() {
     const {
-      values: { title, description, pictures, tags },
+      values: { title, description, images, tags },
       repoUrl,
       handleChange,
       errors,
       prevStep,
-      projects: { project, loading }
+      projects: { project, loading },
+      classes
     } = this.props;
 
     const content = loading ? (
@@ -41,6 +41,14 @@ export class FormEditProject extends Component {
     ) : (
       <GridContainer>
         <Grid item>
+          <Typography
+            variant="h2"
+            gutterBottom
+            align="center"
+            style={{ margin: '30px 0px' }}
+          >
+            Make adjustments
+          </Typography>
           <TextField
             placeholder="Enter project title here"
             label={!isEmpty(errors.title) ? errors.title : 'Project title'}
@@ -50,6 +58,22 @@ export class FormEditProject extends Component {
             value={title}
             error={!isEmpty(errors.title)}
           />
+          <TextField
+            placeholder="Enter project description here"
+            label={
+              !isEmpty(errors.description)
+                ? errors.description
+                : 'Project description'
+            }
+            name="description"
+            onChange={handleChange}
+            fullWidth
+            value={description}
+            error={!isEmpty(errors.description)}
+            multiline
+          />
+          <Tags tags={tags} />
+          <ImageGallery images={images} />
           <Button variant="contained" onClick={prevStep}>
             Back
           </Button>
@@ -72,6 +96,7 @@ FormEditProject.propTypes = {
   repoUrl: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   getFullRepoFromUserByUrl: PropTypes.func.isRequired,
+  deleteTagAtIndex: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
   projects: PropTypes.object.isRequired
 };
@@ -84,5 +109,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getFullRepoFromUserByUrl }
+  { getFullRepoFromUserByUrl, deleteTagAtIndex }
 )(FormEditProject);
