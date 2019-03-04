@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { clearNewProjectRepoUrl } from '../../../store/actions/projectsActions';
+import {
+  clearNewProjectRepoUrl,
+  addNewProject
+} from '../../../store/actions/projectsActions';
 
 import FormRepoSelector from './step-1/FormRepoSelector';
 import FormEditProject from './step-2/FormEditProject';
@@ -11,11 +14,15 @@ import FormContributors from './step-3/FormContributors';
 export class AddProject extends Component {
   state = {
     step: 1,
+    refetchRepoInStep2: false,
     repoUrl: '',
+    liveWebsiteUrl: '',
     title: '',
     description: '',
     images: [],
-    tags: []
+    tags: [],
+    contributorsChecked: false,
+    contributorsDescription: ''
   };
 
   componentWillReceiveProps(nextProps) {
@@ -32,24 +39,68 @@ export class AddProject extends Component {
     if (nextProps.project.images)
       this.setState({ images: nextProps.project.images });
     if (nextProps.project.tags) this.setState({ tags: nextProps.project.tags });
+    if (nextProps.project.liveWebsiteUrl)
+      this.setState({ liveWebsiteUrl: nextProps.project.liveWebsiteUrl });
   }
 
-  nextStep = () => {
-    this.setState(prevState => ({ step: prevState.step + 1 }));
+  nextStep = ({ refetchRepoInStep2 = true } = {}) => {
+    this.setState(prevState => ({
+      step: prevState.step + 1,
+      refetchRepoInStep2
+    }));
   };
 
-  prevStep = () => {
-    this.setState(prevState => ({ step: prevState.step - 1 }));
+  prevStep = ({ refetchRepoInStep2 = false } = {}) => {
+    this.setState(prevState => ({
+      step: prevState.step - 1,
+      refetchRepoInStep2
+    }));
   };
 
   handleChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = e => {};
+  handleSwitchChange = e => {
+    this.setState({ contributorsChecked: e.target.checked });
+  };
+
+  onSubmit = e => {
+    const {
+      repoUrl,
+      liveWebsiteUrl,
+      title,
+      description,
+      images,
+      tags,
+      contributorsChecked,
+      contributorsDescription
+    } = this.state;
+    this.props.addNewProject({
+      repoUrl,
+      liveWebsiteUrl,
+      title,
+      description,
+      images,
+      tags,
+      contributorsChecked,
+      contributorsDescription
+    });
+  };
 
   render() {
-    const { step, repoUrl, title, description, images, tags } = this.state;
+    const {
+      step,
+      refetchRepoInStep2,
+      repoUrl,
+      liveWebsiteUrl,
+      title,
+      description,
+      images,
+      tags,
+      contributorsChecked,
+      contributorsDescription
+    } = this.state;
 
     switch (step) {
       case 1:
@@ -66,8 +117,9 @@ export class AddProject extends Component {
             prevStep={this.prevStep}
             nextStep={this.nextStep}
             handleChange={this.handleChange}
-            values={{ title, description, images, tags }}
+            values={{ liveWebsiteUrl, title, description, images, tags }}
             repoUrl={repoUrl}
+            refetchRepo={refetchRepoInStep2}
           />
         );
       case 3:
@@ -76,7 +128,11 @@ export class AddProject extends Component {
             prevStep={this.prevStep}
             onSubmit={this.onSubmit}
             handleChange={this.handleChange}
-            values={{}}
+            handleSwitchChange={this.handleSwitchChange}
+            values={{
+              checked: contributorsChecked,
+              description: contributorsDescription
+            }}
           />
         );
     }
@@ -85,7 +141,8 @@ export class AddProject extends Component {
 
 AddProject.propTypes = {
   project: PropTypes.object.isRequired,
-  clearNewProjectRepoUrl: PropTypes.func.isRequired
+  clearNewProjectRepoUrl: PropTypes.func.isRequired,
+  addNewProject: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -94,5 +151,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { clearNewProjectRepoUrl }
+  { clearNewProjectRepoUrl, addNewProject }
 )(AddProject);

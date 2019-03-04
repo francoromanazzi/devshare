@@ -25,8 +25,6 @@ export const clearNewProjectRepoUrl = () => dispatch => {
 export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
   dispatch(setProjectsLoading());
 
-  console.log(username, repoUrl);
-
   axios
     .get(`https://api.github.com/users/${username}/repos`)
     .then(res => {
@@ -36,13 +34,14 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
       if (reposSameUrl.length === 0) {
         return dispatch({
           type: GET_ERRORS,
-          payload: { error: 'Repository not found' }
+          payload: { repoUrl: 'Repository not found' }
         });
       }
 
       const repo = reposSameUrl[0];
       newProject.title = repo.name;
       newProject.description = repo.description;
+      newProject.liveWebsiteUrl = repo.homepage;
 
       console.log(repo);
 
@@ -100,9 +99,11 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
                 // Remove starting and ending
                 imageTitle = imageTitle.slice(1, imageTitle.indexOf('.'));
 
+                console.log(image);
+
                 return {
                   title: imageTitle,
-                  url: image.data.download_url
+                  base64: image.data.content
                 };
               });
               dispatch({
@@ -113,23 +114,84 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
             .catch(err =>
               dispatch({
                 type: GET_ERRORS,
-                payload: { error: err.response.data }
+                payload: { repoUrl: err.response.data }
               })
             );
         })
         .catch(err => {
           dispatch({
             type: GET_ERRORS,
-            payload: { error: err.response.data }
+            payload: { repoUrl: err.response.data }
           });
         });
     })
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: { error: err.response.data }
+        payload: { repoUrl: err.response.data }
       })
     );
+};
+
+// Add new project
+export const addNewProject = newProject => (
+  dispatch,
+  getState,
+  { getFirebase, getFirestore }
+) => {
+  const {
+    repoUrl,
+    liveWebsiteUrl,
+    title,
+    description,
+    tags,
+    images,
+    contributorsChecked,
+    contributorsDescription
+  } = newProject;
+
+  const firestore = getFirestore();
+  const firebase = getFirebase();
+  const { profile, auth } = getState().firebase;
+
+  // 1. Prepare new document to save later (so that we can access the random id now)
+  const docRef = firestore.collection('projects').doc();
+
+  // 2. Add a storage reference to each image and remove base64 string
+  const imagesWithStorageRefs = images.map(img => ({
+    title: img.title,
+    storageRef: `images/projects/${docRef.id}/${img.title.replace(
+      / /g,
+      '_'
+    )}.jpg`
+  }));
+
+  // 3. Save project in firestore + upload images to storage (concurrently)
+  const saveProjectInFirestorePromise = docRef.set({
+    userId: auth.uid,
+    repoUrl,
+    liveWebsiteUrl,
+    title,
+    description,
+    tags,
+    imagesWithStorageRefs,
+    contributorsChecked,
+    contributorsDescription
+  });
+
+  const uploadImagesPromise = Promise.all(
+    images.map((img, i) => {
+      console.log(firebase);
+      return firebase
+        .storage()
+        .ref(imagesWithStorageRefs[i].storageRef)
+        .putString(img.base64, 'base64', { contentType: 'image/jpeg' });
+    })
+  );
+
+  Promise.all([saveProjectInFirestorePromise, uploadImagesPromise])
+    .then(console.log)
+    .catch(console.error);
 };
 
 // Remove tag from tags array

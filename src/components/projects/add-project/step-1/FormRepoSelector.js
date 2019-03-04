@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 
 import isEmpty from '../../../../utils/is-empty';
-import { setError } from '../../../../store/actions/errorsActions';
+import { setError, clearErrors } from '../../../../store/actions/errorsActions';
 
 import {
   withStyles,
@@ -25,6 +25,8 @@ const styles = {
 
 export class FormRepoSelector extends Component {
   nextStep = () => {
+    this.props.clearErrors();
+
     // Validate repoUrl input
     if (this.props.values.repoUrl.length === 0) {
       this.props.setError({ repoUrl: 'Repository URL is required' });
@@ -90,7 +92,8 @@ FormRepoSelector.propTypes = {
   values: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
-  setError: PropTypes.func.isRequired
+  setError: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -101,6 +104,6 @@ export default compose(
   withStyles(styles),
   connect(
     mapStateToProps,
-    { setError }
+    { setError, clearErrors }
   )
 )(FormRepoSelector);

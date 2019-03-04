@@ -20,22 +20,8 @@ const Navbar = props => {
   return (
     <AppBar position="static">
       <Toolbar>DevShare</Toolbar>
+      {links}
     </AppBar>
-  );
-
-  return (
-    <div className="navbar-fixed">
-      <nav>
-        <div className="nav-wrapper orange darken-1">
-          <div className="container">
-            <NavLink to="/" className="brand-logo">
-              DevShare
-            </NavLink>
-            {links}
-          </div>
-        </div>
-      </nav>
-    </div>
   );
 };
 

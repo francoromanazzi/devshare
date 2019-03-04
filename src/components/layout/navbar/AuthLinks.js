@@ -8,26 +8,19 @@ const AuthLinks = ({ profile, auth }) => {
   };
 
   return (
-    <ul id="nav-mobile" className="right hide-on-med-and-down fa-ul">
-      <li>
-        <a href="#">Components</a>
-      </li>
-      <li>
-        <a onClick={onSignOutClick}>Log Out</a>
-      </li>
-      <li>
-        <img
-          src={auth.photoURL}
-          alt={`${auth.displayName}'s avatar`}
-          style={{
-            height: '50px',
-            verticalAlign: 'middle',
-            borderRadius: '50%',
-            padding: '0em 2em'
-          }}
-        />
-      </li>
-    </ul>
+    <React.Fragment>
+      <a onClick={onSignOutClick}>Log Out</a>
+      <img
+        src={auth.photoURL}
+        alt={`${auth.displayName}'s avatar`}
+        style={{
+          height: '50px',
+          verticalAlign: 'middle',
+          borderRadius: '50%',
+          padding: '0em 2em'
+        }}
+      />
+    </React.Fragment>
   );
 };
 

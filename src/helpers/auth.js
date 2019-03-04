@@ -9,11 +9,11 @@ export const Auth = connectedRouterRedirect({
   AuthenticatingComponent: LoadingScreen,
   allowRedirectBack: true,
   redirectPath: (state, ownProps) =>
-    locationHelper.getRedirectQueryParam(ownProps) || '/signup',
-  authenticatingSelector: ({ firebase: { auth, isInitializing } }) =>
-    !auth.isLoaded || isInitializing === true,
-  authenticatedSelector: ({ firebase: { auth } }) =>
-    auth.isLoaded && !auth.isEmpty
+    locationHelper.getRedirectQueryParam(ownProps) || '/login',
+  authenticatingSelector: ({ firebase: { auth, profile, isInitializing } }) =>
+    !auth.isLoaded || !profile.isLoaded || isInitializing === true,
+  authenticatedSelector: ({ firebase: { auth, profile } }) =>
+    auth.isLoaded && !auth.isEmpty && profile.isLoaded
 });
 
 export const NotAuth = connectedRouterRedirect({
@@ -22,8 +22,8 @@ export const NotAuth = connectedRouterRedirect({
   allowRedirectBack: false,
   redirectPath: (state, ownProps) =>
     locationHelper.getRedirectQueryParam(ownProps) || '/',
-  authenticatingSelector: ({ firebase: { auth, isInitializing } }) =>
-    !auth.isLoaded || isInitializing === true,
-  authenticatedSelector: ({ firebase: { auth } }) =>
-    auth.isLoaded && auth.isEmpty
+  authenticatingSelector: ({ firebase: { auth, profile, isInitializing } }) =>
+    !auth.isLoaded || !profile.isLoaded || isInitializing === true,
+  authenticatedSelector: ({ firebase: { auth, profile } }) =>
+    auth.isLoaded && auth.isEmpty && profile.isLoaded
 });

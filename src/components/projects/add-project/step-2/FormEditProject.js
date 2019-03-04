@@ -7,6 +7,7 @@ import {
   getFullRepoFromUserByUrl,
   deleteTagAtIndex
 } from '../../../../store/actions/projectsActions';
+import { setError, clearErrors } from '../../../../store/actions/errorsActions';
 
 import { Grid, Typography, TextField, Button } from '@material-ui/core';
 import GridContainer from '../../../common/grid-container/GridContainer';
@@ -20,20 +21,53 @@ export class FormEditProject extends Component {
   };
 
   componentDidMount() {
-    const { repoUrl, username, getFullRepoFromUserByUrl } = this.props;
+    const {
+      repoUrl,
+      refetchRepo,
+      username,
+      getFullRepoFromUserByUrl
+    } = this.props;
 
-    getFullRepoFromUserByUrl(username, repoUrl);
+    if (refetchRepo) getFullRepoFromUserByUrl(username, repoUrl);
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (!isEmpty(nextProps.errors.repoUrl)) {
+      this.props.prevStep();
+    }
+  }
+
+  validateInputs = () => {
+    let errors = false;
+
+    if (this.props.values.title.length === 0) {
+      errors = true;
+      this.props.setError({ title: 'Title is required' });
+    }
+    if (this.props.values.description.length === 0) {
+      errors = true;
+      this.props.setError({ description: 'Description is required' });
+    }
+
+    return !errors;
+  };
+
+  nextStep = () => {
+    this.props.clearErrors();
+    if (this.validateInputs()) this.props.nextStep();
+  };
+
+  prevStep = () => {
+    this.props.clearErrors();
+    this.props.prevStep();
+  };
 
   render() {
     const {
-      values: { title, description, images, tags },
-      repoUrl,
+      values: { title, liveWebsiteUrl, description, images, tags },
       handleChange,
       errors,
-      prevStep,
-      projects: { project, loading },
-      classes
+      projects: { project, loading }
     } = this.props;
 
     const content = loading ? (
@@ -72,9 +106,17 @@ export class FormEditProject extends Component {
             error={!isEmpty(errors.description)}
             multiline
           />
+          <TextField
+            placeholder="Enter live website url here"
+            label="Live website URL"
+            name="liveWebsiteUrl"
+            onChange={handleChange}
+            fullWidth
+            value={liveWebsiteUrl}
+          />
           <Tags tags={tags} />
           <ImageGallery images={images} />
-          <Button variant="contained" onClick={prevStep}>
+          <Button variant="contained" onClick={this.prevStep}>
             Back
           </Button>
           <Button variant="contained" onClick={this.nextStep}>
@@ -97,8 +139,11 @@ FormEditProject.propTypes = {
   username: PropTypes.string.isRequired,
   getFullRepoFromUserByUrl: PropTypes.func.isRequired,
   deleteTagAtIndex: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired,
+  setError: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
-  projects: PropTypes.object.isRequired
+  projects: PropTypes.object.isRequired,
+  refetchRepo: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -109,5 +154,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getFullRepoFromUserByUrl, deleteTagAtIndex }
+  { getFullRepoFromUserByUrl, deleteTagAtIndex, setError, clearErrors }
 )(FormEditProject);

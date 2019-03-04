@@ -3,7 +3,13 @@ import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
-import { deleteImageAtIndex } from '../../../../store/actions/projectsActions';
+import base64SrcFormat from '../../../../utils/base64-src-format';
+import isEmpty from '../../../../utils/is-empty';
+import {
+  deleteImageAtIndex,
+  addNewImage
+} from '../../../../store/actions/projectsActions';
+import { clearErrors, setError } from '../../../../store/actions/errorsActions';
 
 import {
   withStyles,
@@ -20,6 +26,7 @@ import {
   Typography,
   TextField
 } from '@material-ui/core';
+import ImageInput from './ImageInput';
 
 const styles = theme => ({
   root: {
@@ -51,7 +58,8 @@ export class ImageGallery extends Component {
     },
     uploadDialog: {
       open: false,
-      title: ''
+      title: '',
+      base64: ''
     }
   };
 
@@ -74,9 +82,27 @@ export class ImageGallery extends Component {
   };
 
   handleUploadClose = () => {
+    this.props.clearErrors();
     this.setState(prevState => ({
       uploadDialog: { ...prevState.uploadDialog, open: false, title: '' }
     }));
+  };
+
+  handleUploadSubmit = e => {
+    const { uploadDialog } = this.state;
+
+    // Validate input (file input was already validated)
+    if (uploadDialog.title === '') {
+      this.props.setError({ imageTitle: 'Title is required' });
+      return;
+    }
+
+    this.props.addNewImage({
+      title: uploadDialog.title,
+      base64: uploadDialog.base64
+    });
+
+    this.handleUploadClose();
   };
 
   handleDelete = i => {
@@ -84,27 +110,34 @@ export class ImageGallery extends Component {
   };
 
   onChange = e => {
-    // Grab e.target.value now because setState is async
-    const title = e.target.value;
+    if (e.target.name === 'title') {
+      const { value } = e.target;
+      this.setState(prevState => ({
+        uploadDialog: { ...prevState.uploadDialog, title: value }
+      }));
+    }
+  };
+
+  onFileReaderEnd = base64 => {
     this.setState(prevState => ({
-      uploadDialog: { ...prevState.uploadDialog, title }
+      uploadDialog: { ...prevState.uploadDialog, base64 }
     }));
   };
 
   render() {
-    const { classes, images, width } = this.props;
+    const { classes, images, width, errors } = this.props;
     const { zoomDialog, uploadDialog } = this.state;
 
     const cols = width === 'xs' || width === 'sm' ? 1 : width === 'md' ? 2 : 3;
 
-    const imageListContent =
-      images.length === 0 ? null : (
-        <div className={classes.root}>
-          <GridList className={classes.gridList} cols={cols}>
-            {images.map((img, i) => (
-              <GridListTile key={img.url}>
+    const imageListContent = (
+      <div className={classes.root}>
+        <GridList className={classes.gridList} cols={cols}>
+          {images.length > 0 &&
+            images.map((img, i) => (
+              <GridListTile key={i}>
                 <img
-                  src={img.url}
+                  src={base64SrcFormat(img.base64)}
                   alt={img.title}
                   onClick={this.handleZoomOpen.bind(this, img)}
                   style={{ cursor: 'pointer' }}
@@ -123,21 +156,21 @@ export class ImageGallery extends Component {
                 />
               </GridListTile>
             ))}
-            <GridListTile
-              onClick={this.handleUploadOpen}
-              style={{ cursor: 'pointer' }}
-            >
-              <Typography variant="h6">Add new image</Typography>
-            </GridListTile>
-          </GridList>
-        </div>
-      );
+          <GridListTile
+            onClick={this.handleUploadOpen}
+            style={{ cursor: 'pointer' }}
+          >
+            <Typography variant="h6">Add new image</Typography>
+          </GridListTile>
+        </GridList>
+      </div>
+    );
 
     const dialogZoomViewContent = (
       <Dialog open={zoomDialog.open} onClose={this.handleZoomClose}>
         <DialogContent>
           <img
-            src={zoomDialog.currentImg.url}
+            src={base64SrcFormat(zoomDialog.currentImg.base64)}
             alt={zoomDialog.currentImg.title}
             style={{ width: '100%' }}
           />
@@ -159,15 +192,25 @@ export class ImageGallery extends Component {
           <TextField
             margin="dense"
             name="title"
-            label="Image title"
+            label={
+              !isEmpty(errors.imageTitle) ? errors.imageTitle : 'Image title'
+            }
             value={uploadDialog.title}
             onChange={this.onChange}
+            error={!isEmpty(errors.imageTitle)}
             fullWidth
+          />
+          <ImageInput
+            onFileReaderEnd={this.onFileReaderEnd}
+            base64={uploadDialog.base64}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={this.handleUploadClose} color="secondary">
             Close
+          </Button>
+          <Button onClick={this.handleUploadSubmit} color="primary">
+            Upload
           </Button>
         </DialogActions>
       </Dialog>
@@ -180,33 +223,6 @@ export class ImageGallery extends Component {
         {dialogUploadImageContent}
       </React.Fragment>
     );
-
-    /* 
-    const content =
-      images.length === 0 ? null : (
-        <GridList cols={3}>
-          {images.map(img => (
-            <GridTile
-              title={img.tags}
-              key={img.id}
-              subtitle={
-                <span>
-                  by <strong>{img.user}</strong>
-                </span>
-              }
-              actionIcon={
-                <IconButton onClick={() => this.handleOpen(img.largeImageURL)}>
-                  <ZoomIn color="white" />
-                </IconButton>
-              }
-            >
-              <img src={img.largeImageURL} alt="" />
-            </GridTile>
-          ))}
-        </GridList>
-      );
-
-    return content;*/
   }
 }
 
@@ -214,14 +230,21 @@ ImageGallery.propTypes = {
   images: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
   width: PropTypes.string.isRequired,
-  deleteImageAtIndex: PropTypes.func.isRequired
+  deleteImageAtIndex: PropTypes.func.isRequired,
+  clearErrors: PropTypes.func.isRequired,
+  addNewImage: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired
 };
+
+const mapStateToProps = state => ({
+  errors: state.errors
+});
 
 export default compose(
   withStyles(styles),
   withWidth(),
   connect(
-    null,
-    { deleteImageAtIndex }
+    mapStateToProps,
+    { deleteImageAtIndex, setError, clearErrors, addNewImage }
   )
 )(ImageGallery);
