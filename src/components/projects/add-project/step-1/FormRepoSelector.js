@@ -11,17 +11,29 @@ import {
   Grid,
   TextField,
   Button,
-  Typography
+  Typography,
+  Paper
 } from '@material-ui/core';
 
 import GridContainer from '../../../common/grid-container/GridContainer';
 import GithubRepoList from './GithubRepoList';
 
-const styles = {
-  button: {
-    margin: 15
+const styles = theme => ({
+  paper: { ...theme.customs.paper },
+  title: {
+    marginTop: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 4
+  },
+  subtitle: {
+    marginTop: theme.spacing.unit * 4
+  },
+  primary: {
+    color: theme.palette.primary.main
+  },
+  continueButton: {
+    marginTop: theme.spacing.unit * 4
   }
-};
+});
 
 export class FormRepoSelector extends Component {
   nextStep = () => {
@@ -47,39 +59,38 @@ export class FormRepoSelector extends Component {
     return (
       <GridContainer>
         <Grid item>
-          <Typography
-            variant="h2"
-            gutterBottom
-            align="center"
-            style={{ margin: '30px 0px' }}
-          >
-            Add new project
-          </Typography>
-          <TextField
-            placeholder="Paste your GitHub repository url here"
-            label={
-              !isEmpty(errors.repoUrl)
-                ? errors.repoUrl
-                : 'GitHub repository url'
-            }
-            name="repoUrl"
-            onChange={handleChange}
-            fullWidth
-            value={repoUrl}
-            error={!isEmpty(errors.repoUrl)}
-          />
-          <br />
-          <Typography variant="subtitle1" gutterBottom>
-            or select it from here...
-          </Typography>
-          <GithubRepoList value={repoUrl} />
-          <Button
-            variant="contained"
-            className={classes.button}
-            onClick={this.nextStep}
-          >
-            Continue
-          </Button>
+          <Paper className={classes.paper} elevation={1}>
+            <Typography variant="h2" align="center" className={classes.title}>
+              Add <span className={classes.primary}>new project</span>
+            </Typography>
+            <TextField
+              placeholder="Paste your GitHub repository url here"
+              label={
+                !isEmpty(errors.repoUrl)
+                  ? errors.repoUrl
+                  : 'GitHub repository url'
+              }
+              name="repoUrl"
+              onChange={handleChange}
+              fullWidth
+              value={repoUrl}
+              error={!isEmpty(errors.repoUrl)}
+            />
+            <br />
+            <Typography variant="subtitle1" className={classes.subtitle}>
+              or select it from here...
+            </Typography>
+            <GithubRepoList value={repoUrl} />
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={this.nextStep}
+              color="secondary"
+              className={classes.continueButton}
+            >
+              Continue
+            </Button>
+          </Paper>
         </Grid>
       </GridContainer>
     );

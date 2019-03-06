@@ -1,30 +1,38 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true
+  }
+});
+
 export default createMuiTheme({
   palette: {
-    type: 'light',
-    primary: {
-      main: '#1565c0' // customise your main color here
-    },
-    secondary: { main: '#673ab7' },
+    type: 'dark',
 
-    error: { main: '#ca0909' },
-
-    sand: { main: '#F4DECB' },
-    shell: { main: '#F8EEE7' },
-    status: {
-      danger: '#b71c1c'
+    primary: { main: '#00BCF2', light: '#00BCF2', dark: '#00BCF2' },
+    secondary: { light: '#59345F', main: '#5B295E', dark: '#511E69' },
+    error: { main: '#ED4837' },
+    background: {
+      default: '#212C3D',
+      paper: '#43526D',
+      light1: '#29374A',
+      light2: '#43526D'
     },
 
-    // Used by `getContrastText()` to maximize the contrast between the background and
-    // the text.
     contrastThreshold: 3,
-    // Used to shift a color's luminance by approximately
-    // two indexes within its tonal palette.
-    // E.g., shift from Red 500 to Red 300 or Red 700.
     tonalOffset: 0.2
   },
   typography: {
     useNextVariants: true
+  },
+  customs: {
+    paper: {
+      ...theme.mixins.gutters(),
+      paddingTop: theme.spacing.unit * 4,
+      marginTop: theme.spacing.unit * 4,
+      paddingBottom: theme.spacing.unit * 4,
+      marginBottom: theme.spacing.unit * 4
+    }
   }
 });

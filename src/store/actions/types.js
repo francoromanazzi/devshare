@@ -12,3 +12,4 @@ export const DELETE_TAG_AT_INDEX = 'DELETE_TAG_AT_INDEX';
 export const ADD_TAG = 'ADD_TAG';
 export const DELETE_IMAGE_AT_INDEX = 'DELETE_IMAGE_AT_INDEX';
 export const ADD_IMAGE = 'ADD_IMAGE';
+export const CLEAR_PROJECT = 'CLEAR_PROJECT';

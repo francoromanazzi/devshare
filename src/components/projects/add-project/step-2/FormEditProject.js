@@ -1,19 +1,42 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import isEmpty from '../../../../utils/is-empty';
 import {
   getFullRepoFromUserByUrl,
-  deleteTagAtIndex
+  deleteTagAtIndex,
+  clearProject
 } from '../../../../store/actions/projectsActions';
 import { setError, clearErrors } from '../../../../store/actions/errorsActions';
 
-import { Grid, Typography, TextField, Button } from '@material-ui/core';
+import {
+  withStyles,
+  Grid,
+  Typography,
+  TextField,
+  Button,
+  Paper
+} from '@material-ui/core';
 import GridContainer from '../../../common/grid-container/GridContainer';
 import Spinner from '../../../common/spinner/Spinner';
 import Tags from './Tags';
 import ImageGallery from './ImageGallery';
+
+const styles = theme => ({
+  paper: { ...theme.customs.paper },
+  title: {
+    marginTop: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 4
+  },
+  primary: {
+    color: theme.palette.primary.main
+  },
+  button: {
+    marginTop: theme.spacing.unit * 4
+  }
+});
 
 export class FormEditProject extends Component {
   nextStep = () => {
@@ -59,6 +82,7 @@ export class FormEditProject extends Component {
 
   prevStep = () => {
     this.props.clearErrors();
+    this.props.clearProject();
     this.props.prevStep();
   };
 
@@ -67,7 +91,8 @@ export class FormEditProject extends Component {
       values: { title, liveWebsiteUrl, description, images, tags },
       handleChange,
       errors,
-      projects: { project, loading }
+      projects: { project, loading },
+      classes
     } = this.props;
 
     const content = loading ? (
@@ -75,53 +100,65 @@ export class FormEditProject extends Component {
     ) : (
       <GridContainer>
         <Grid item>
-          <Typography
-            variant="h2"
-            gutterBottom
-            align="center"
-            style={{ margin: '30px 0px' }}
-          >
-            Make adjustments
-          </Typography>
-          <TextField
-            placeholder="Enter project title here"
-            label={!isEmpty(errors.title) ? errors.title : 'Project title'}
-            name="title"
-            onChange={handleChange}
-            fullWidth
-            value={title}
-            error={!isEmpty(errors.title)}
-          />
-          <TextField
-            placeholder="Enter project description here"
-            label={
-              !isEmpty(errors.description)
-                ? errors.description
-                : 'Project description'
-            }
-            name="description"
-            onChange={handleChange}
-            fullWidth
-            value={description}
-            error={!isEmpty(errors.description)}
-            multiline
-          />
-          <TextField
-            placeholder="Enter live website url here"
-            label="Live website URL"
-            name="liveWebsiteUrl"
-            onChange={handleChange}
-            fullWidth
-            value={liveWebsiteUrl}
-          />
-          <Tags tags={tags} />
-          <ImageGallery images={images} />
-          <Button variant="contained" onClick={this.prevStep}>
-            Back
-          </Button>
-          <Button variant="contained" onClick={this.nextStep}>
-            Continue
-          </Button>
+          <Paper className={classes.paper}>
+            <Typography
+              variant="h2"
+              gutterBottom
+              align="center"
+              className={classes.title}
+            >
+              Make <span className={classes.primary}>adjustments</span>
+            </Typography>
+            <TextField
+              placeholder="Enter project title here"
+              label={!isEmpty(errors.title) ? errors.title : 'Project title'}
+              name="title"
+              onChange={handleChange}
+              fullWidth
+              value={title}
+              error={!isEmpty(errors.title)}
+            />
+            <TextField
+              placeholder="Enter project description here"
+              label={
+                !isEmpty(errors.description)
+                  ? errors.description
+                  : 'Project description'
+              }
+              name="description"
+              onChange={handleChange}
+              fullWidth
+              value={description}
+              error={!isEmpty(errors.description)}
+              multiline
+            />
+            <TextField
+              placeholder="Enter live website url here"
+              label="Live website URL"
+              name="liveWebsiteUrl"
+              onChange={handleChange}
+              fullWidth
+              value={liveWebsiteUrl}
+            />
+            <Tags tags={tags} />
+            <ImageGallery images={images} />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.prevStep}
+              className={classes.button}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={this.nextStep}
+              className={classes.button}
+            >
+              Continue
+            </Button>
+          </Paper>
         </Grid>
       </GridContainer>
     );
@@ -131,6 +168,7 @@ export class FormEditProject extends Component {
 }
 
 FormEditProject.propTypes = {
+  classes: PropTypes.object.isRequired,
   prevStep: PropTypes.func.isRequired,
   nextStep: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
@@ -141,6 +179,7 @@ FormEditProject.propTypes = {
   deleteTagAtIndex: PropTypes.func.isRequired,
   clearErrors: PropTypes.func.isRequired,
   setError: PropTypes.func.isRequired,
+  clearProject: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired,
   projects: PropTypes.object.isRequired,
   refetchRepo: PropTypes.bool.isRequired
@@ -152,7 +191,16 @@ const mapStateToProps = state => ({
   projects: state.projects
 });
 
-export default connect(
-  mapStateToProps,
-  { getFullRepoFromUserByUrl, deleteTagAtIndex, setError, clearErrors }
+export default compose(
+  withStyles(styles),
+  connect(
+    mapStateToProps,
+    {
+      getFullRepoFromUserByUrl,
+      deleteTagAtIndex,
+      setError,
+      clearErrors,
+      clearProject
+    }
+  )
 )(FormEditProject);

@@ -6,12 +6,20 @@ import {
   DELETE_TAG_AT_INDEX,
   ADD_TAG,
   DELETE_IMAGE_AT_INDEX,
-  ADD_IMAGE
+  ADD_IMAGE,
+  CLEAR_PROJECT
 } from '../actions/types';
 
 const initState = {
   projects: [],
-  project: {},
+  project: {
+    repoUrl: '',
+    liveWebsiteUrl: '',
+    title: '',
+    description: '',
+    images: [],
+    tags: []
+  },
   loading: false
 };
 
@@ -41,7 +49,7 @@ export default function(state = initState, action) {
     case GET_PROJECT:
       return {
         ...state,
-        project: action.payload.project,
+        project: { ...state.project, ...action.payload.project },
         loading: false
       };
     case DELETE_TAG_AT_INDEX:
@@ -74,6 +82,19 @@ export default function(state = initState, action) {
         project: {
           ...state.project,
           images: [...state.project.images, action.payload]
+        }
+      };
+    case CLEAR_PROJECT:
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          repoUrl: '',
+          liveWebsiteUrl: '',
+          title: '',
+          description: '',
+          images: [],
+          tags: []
         }
       };
     default:

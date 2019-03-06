@@ -28,18 +28,24 @@ export class AddProject extends Component {
   componentWillReceiveProps(nextProps) {
     const { clearNewProjectRepoUrl } = this.props;
 
-    if (nextProps.project.repoUrl && nextProps.project.repoUrl !== '')
+    console.log(nextProps);
+
+    if (
+      nextProps.project.repoUrl !== undefined &&
+      nextProps.project.repoUrl !== ''
+    )
       this.setState({ repoUrl: nextProps.project.repoUrl }, () =>
         clearNewProjectRepoUrl()
       );
-    if (nextProps.project.title)
+    if (nextProps.project.title !== undefined)
       this.setState({ title: nextProps.project.title });
-    if (nextProps.project.description)
+    if (nextProps.project.description !== undefined)
       this.setState({ description: nextProps.project.description });
-    if (nextProps.project.images)
+    if (nextProps.project.images !== undefined)
       this.setState({ images: nextProps.project.images });
-    if (nextProps.project.tags) this.setState({ tags: nextProps.project.tags });
-    if (nextProps.project.liveWebsiteUrl)
+    if (nextProps.project.tags !== undefined)
+      this.setState({ tags: nextProps.project.tags });
+    if (nextProps.project.liveWebsiteUrl !== undefined)
       this.setState({ liveWebsiteUrl: nextProps.project.liveWebsiteUrl });
   }
 
@@ -135,6 +141,8 @@ export class AddProject extends Component {
             }}
           />
         );
+      default:
+        return null;
     }
   }
 }

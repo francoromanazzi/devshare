@@ -8,7 +8,8 @@ import {
   DELETE_TAG_AT_INDEX,
   ADD_TAG,
   DELETE_IMAGE_AT_INDEX,
-  ADD_IMAGE
+  ADD_IMAGE,
+  CLEAR_PROJECT
 } from '../actions/types';
 
 // Set github repo url when adding a new project
@@ -40,8 +41,8 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
 
       const repo = reposSameUrl[0];
       newProject.title = repo.name;
-      newProject.description = repo.description;
-      newProject.liveWebsiteUrl = repo.homepage;
+      newProject.description = repo.description || '';
+      newProject.liveWebsiteUrl = repo.homepage || '';
 
       console.log(repo);
 
@@ -230,5 +231,12 @@ export const addNewImage = img => {
 export const setProjectsLoading = () => {
   return {
     type: PROJECTS_LOADING
+  };
+};
+
+// Clear current project
+export const clearProject = () => {
+  return {
+    type: CLEAR_PROJECT
   };
 };

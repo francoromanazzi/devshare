@@ -1,12 +1,35 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import isEmpty from '../../../../utils/is-empty';
 import { setError, clearErrors } from '../../../../store/actions/errorsActions';
 
-import { Grid, Typography, Switch, TextField, Button } from '@material-ui/core';
+import {
+  withStyles,
+  Grid,
+  Typography,
+  Switch,
+  TextField,
+  Button,
+  Paper
+} from '@material-ui/core';
 import GridContainer from '../../../common/grid-container/GridContainer';
+
+const styles = theme => ({
+  paper: { ...theme.customs.paper },
+  title: {
+    marginTop: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 4
+  },
+  primary: {
+    color: theme.palette.primary.main
+  },
+  button: {
+    marginTop: theme.spacing.unit * 4
+  }
+});
 
 export class FormContributors extends Component {
   prevStep = () => {
@@ -38,42 +61,55 @@ export class FormContributors extends Component {
       handleChange,
       handleSwitchChange,
       values: { checked, description },
-      errors
+      errors,
+      classes
     } = this.props;
 
     return (
       <GridContainer>
         <Grid item>
-          <Typography
-            variant="h2"
-            gutterBottom
-            align="center"
-            style={{ margin: '30px 0px' }}
-          >
-            Looking for contributors?
-          </Typography>
-          <Switch checked={checked} onChange={handleSwitchChange} />
-          <TextField
-            placeholder="Enter description here"
-            label={
-              !isEmpty(errors.contributorsDescription)
-                ? errors.contributorsDescription
-                : 'Description'
-            }
-            disabled={!checked}
-            name="contributorsDescription"
-            onChange={handleChange}
-            fullWidth
-            value={description}
-            error={!isEmpty(errors.contributorsDescription)}
-            multiline
-          />
-          <Button variant="contained" onClick={this.prevStep}>
-            Back
-          </Button>
-          <Button variant="contained" onClick={this.onSubmit}>
-            Submit
-          </Button>
+          <Paper className={classes.paper}>
+            <Typography
+              variant="h2"
+              gutterBottom
+              align="center"
+              className={classes.title}
+            >
+              Looking for <span className={classes.primary}>contributors?</span>
+            </Typography>
+            <Switch checked={checked} onChange={handleSwitchChange} />
+            <TextField
+              placeholder="Enter description here"
+              label={
+                !isEmpty(errors.contributorsDescription)
+                  ? errors.contributorsDescription
+                  : 'Description'
+              }
+              disabled={!checked}
+              name="contributorsDescription"
+              onChange={handleChange}
+              fullWidth
+              value={description}
+              error={!isEmpty(errors.contributorsDescription)}
+              multiline
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.prevStep}
+              className={classes.button}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={this.onSubmit}
+              className={classes.button}
+            >
+              Submit
+            </Button>
+          </Paper>
         </Grid>
       </GridContainer>
     );
@@ -81,6 +117,7 @@ export class FormContributors extends Component {
 }
 
 FormContributors.propTypes = {
+  classes: PropTypes.object.isRequired,
   prevStep: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
@@ -94,7 +131,10 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { clearErrors, setError }
+export default compose(
+  withStyles(styles),
+  connect(
+    mapStateToProps,
+    { clearErrors, setError }
+  )
 )(FormContributors);

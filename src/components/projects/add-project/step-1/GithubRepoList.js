@@ -17,7 +17,7 @@ const styles = theme => ({
     position: 'relative',
     overflow: 'auto',
     maxHeight: '40vh',
-    border: '1px black solid'
+    border: `2px ${theme.palette.primary.main} solid`
   }
 });
 
