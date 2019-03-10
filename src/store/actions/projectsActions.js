@@ -9,7 +9,8 @@ import {
   ADD_TAG,
   DELETE_IMAGE_AT_INDEX,
   ADD_IMAGE,
-  CLEAR_PROJECT
+  CLEAR_PROJECT,
+  CHANGE_IMAGE_TITLE
 } from '../actions/types';
 
 // Set github repo url when adding a new project
@@ -44,8 +45,6 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
       newProject.description = repo.description || '';
       newProject.liveWebsiteUrl = repo.homepage || '';
 
-      console.log(repo);
-
       const readmePromise = axios.get(
         `https://api.github.com/repos/${username}/${repo.name}/readme`,
         { validateStatus: false }
@@ -61,8 +60,6 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
 
       Promise.all([readmePromise, topicsPromise])
         .then(res => {
-          console.log(res);
-
           newProject.tags = res[1].data.names;
 
           // If README.md doesn't exist
@@ -76,11 +73,9 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
 
           // Get images from README.md
           const readmeText = window.atob(res[0].data.content); // from base64
-          console.log(readmeText);
           let imageUrlMatches = readmeText.match(
             /(\/(.*))*\.(bmp|png|jpg|jpeg)/gim
           );
-          console.log(imageUrlMatches);
 
           imageUrlMatches = imageUrlMatches.map(imageUrl =>
             axios.get(
@@ -99,8 +94,6 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
                 )[0]; // Example: '/Picture.jpg'
                 // Remove starting and ending
                 imageTitle = imageTitle.slice(1, imageTitle.indexOf('.'));
-
-                console.log(image);
 
                 return {
                   title: imageTitle,
@@ -182,7 +175,6 @@ export const addNewProject = newProject => (
 
   const uploadImagesPromise = Promise.all(
     images.map((img, i) => {
-      console.log(firebase);
       return firebase
         .storage()
         .ref(imagesWithStorageRefs[i].storageRef)
@@ -224,6 +216,14 @@ export const addNewImage = img => {
   return {
     type: ADD_IMAGE,
     payload: img
+  };
+};
+
+// Change image title of existing image
+export const changeImageTitle = (oldTitle, newTitle) => {
+  return {
+    type: CHANGE_IMAGE_TITLE,
+    payload: { oldTitle, newTitle }
   };
 };
 

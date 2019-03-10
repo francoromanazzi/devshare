@@ -16,8 +16,11 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
     position: 'relative',
     overflow: 'auto',
-    maxHeight: '40vh',
-    border: `2px ${theme.palette.primary.main} solid`
+    maxHeight: `${46 * 7}px`, // 7 List Items
+    border: `2px ${theme.palette.primary.main} solid`,
+    marginBottom: theme.spacing.unit * 4,
+    paddingTop: '0px',
+    paddingBottom: '0px'
   }
 });
 
@@ -36,8 +39,8 @@ export class GithubRepoList extends Component {
     let content = loading ? (
       <Spinner />
     ) : repos.length === 0 ? (
-      <Typography variant="h5" gutterBottom>
-        You have no public repositories
+      <Typography color="error" variant="h6" gutterBottom>
+        You have no public repositories on GitHub
       </Typography>
     ) : (
       <List className={classes.list}>

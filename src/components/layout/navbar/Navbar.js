@@ -1,38 +1,9 @@
-/*
-const Navbar = props => {
-  const { auth, profile } = props;
-  const links = auth.uid ? (
-    <AuthLinks auth={auth} profile={profile} />
-  ) : (
-    <GuestLinks />
-  );
-
-  return (
-    <AppBar position="static">
-      <Toolbar>DevShare</Toolbar>
-      {links}
-    </AppBar>
-  );
-};
-
-Navbar.propTypes = {
-  auth: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired
-};
-
-const mapStateToProps = state => ({
-  auth: state.firebase.auth,
-  profile: state.firebase.profile
-});
-
-export default connect(mapStateToProps)(Navbar);
-*/
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
+import classNames from 'classnames';
 
 import {
   AppBar,
@@ -132,7 +103,10 @@ const styles = theme => ({
     textDecoration: 'none',
     color: theme.palette.common.white,
     '&:hover': {
-      color: fade(theme.palette.common.white, 0.25)
+      color: fade(theme.palette.common.white, 0.25),
+      '& span': {
+        color: fade(theme.palette.primary.main, 0.25)
+      }
     }
   },
   primary: {
@@ -236,7 +210,10 @@ class PrimarySearchAppBar extends React.Component {
                 color="inherit"
                 noWrap
               >
-                Dev<span className={classes.primary}>Share</span>
+                Dev
+                <span className={classNames(classes.primary, classes.brand)}>
+                  Share
+                </span>
               </Typography>
             </Link>
 

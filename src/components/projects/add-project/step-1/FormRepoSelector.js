@@ -19,16 +19,19 @@ import GridContainer from '../../../common/grid-container/GridContainer';
 import GithubRepoList from './GithubRepoList';
 
 const styles = theme => ({
-  paper: { ...theme.customs.paper },
+  paper: { ...theme.customs.paper, marginTop: 0 },
+  primary: {
+    color: theme.palette.primary.main
+  },
   title: {
+    marginBottom: theme.spacing.unit * 4
+  },
+  input: {
     marginTop: theme.spacing.unit * 4,
     marginBottom: theme.spacing.unit * 4
   },
   subtitle: {
     marginTop: theme.spacing.unit * 4
-  },
-  primary: {
-    color: theme.palette.primary.main
   },
   continueButton: {
     marginTop: theme.spacing.unit * 4
@@ -59,7 +62,7 @@ export class FormRepoSelector extends Component {
     return (
       <GridContainer>
         <Grid item>
-          <Paper className={classes.paper} elevation={1}>
+          <Paper className={classes.paper}>
             <Typography variant="h2" align="center" className={classes.title}>
               Add <span className={classes.primary}>new project</span>
             </Typography>
@@ -75,6 +78,8 @@ export class FormRepoSelector extends Component {
               fullWidth
               value={repoUrl}
               error={!isEmpty(errors.repoUrl)}
+              className={classes.input}
+              required
             />
             <br />
             <Typography variant="subtitle1" className={classes.subtitle}>

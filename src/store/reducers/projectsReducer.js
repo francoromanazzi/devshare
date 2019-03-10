@@ -7,7 +7,8 @@ import {
   ADD_TAG,
   DELETE_IMAGE_AT_INDEX,
   ADD_IMAGE,
-  CLEAR_PROJECT
+  CLEAR_PROJECT,
+  CHANGE_IMAGE_TITLE
 } from '../actions/types';
 
 const initState = {
@@ -18,7 +19,9 @@ const initState = {
     title: '',
     description: '',
     images: [],
-    tags: []
+    tags: [],
+    contributorsChecked: false,
+    contributorsDescription: ''
   },
   loading: false
 };
@@ -84,17 +87,24 @@ export default function(state = initState, action) {
           images: [...state.project.images, action.payload]
         }
       };
+    case CHANGE_IMAGE_TITLE:
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          images: state.project.images.map(img =>
+            img.title === action.payload.oldTitle
+              ? { ...img, title: action.payload.newTitle }
+              : img
+          )
+        }
+      };
     case CLEAR_PROJECT:
       return {
         ...state,
         project: {
           ...state.project,
-          repoUrl: '',
-          liveWebsiteUrl: '',
-          title: '',
-          description: '',
-          images: [],
-          tags: []
+          ...initState.project
         }
       };
     default:

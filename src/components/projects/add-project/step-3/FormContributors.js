@@ -18,13 +18,18 @@ import {
 import GridContainer from '../../../common/grid-container/GridContainer';
 
 const styles = theme => ({
-  paper: { ...theme.customs.paper },
-  title: {
-    marginTop: theme.spacing.unit * 4,
-    marginBottom: theme.spacing.unit * 4
-  },
+  paper: { ...theme.customs.paper, marginTop: 0 },
   primary: {
     color: theme.palette.primary.main
+  },
+  title: {
+    marginBottom: theme.spacing.unit * 4
+  },
+  switch: {
+    marginTop: theme.spacing.unit * 4
+  },
+  description: {
+    marginBottom: theme.spacing.unit * 4
   },
   button: {
     marginTop: theme.spacing.unit * 4
@@ -77,7 +82,13 @@ export class FormContributors extends Component {
             >
               Looking for <span className={classes.primary}>contributors?</span>
             </Typography>
-            <Switch checked={checked} onChange={handleSwitchChange} />
+            <Grid container justify="center">
+              <Switch
+                checked={checked}
+                onChange={handleSwitchChange}
+                className={classes.switch}
+              />
+            </Grid>
             <TextField
               placeholder="Enter description here"
               label={
@@ -91,24 +102,40 @@ export class FormContributors extends Component {
               fullWidth
               value={description}
               error={!isEmpty(errors.contributorsDescription)}
+              required={checked}
+              className={classes.description}
               multiline
+              rows={2}
+              rowsMax={20}
             />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.prevStep}
-              className={classes.button}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={this.onSubmit}
-              className={classes.button}
-            >
-              Submit
-            </Button>
+            <Grid container spacing={16}>
+              <Grid item xs={3}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.prevStep}
+                  className={classes.button}
+                  fullWidth
+                >
+                  <i
+                    className="fas fa-arrow-left"
+                    style={{ fontSize: '1.1em', marginRight: '0.5em' }}
+                  />
+                  Back
+                </Button>
+              </Grid>
+              <Grid item xs={9}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={this.onSubmit}
+                  className={classes.button}
+                  fullWidth
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
           </Paper>
         </Grid>
       </GridContainer>

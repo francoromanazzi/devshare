@@ -2,11 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import isEmpty from '../../../../utils/is-empty';
+import classNames from 'classnames';
 
 import {
   deleteTagAtIndex,
   addNewTag
 } from '../../../../store/actions/projectsActions';
+import {
+  setError,
+  clearSpecificErrors
+} from '../../../../store/actions/errorsActions';
 
 import {
   withStyles,
@@ -23,18 +29,18 @@ const styles = theme => ({
   tags: {
     display: 'flex',
     justifyContent: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    marginTop: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 4
   },
   chip: {
     margin: theme.spacing.unit
   },
-  paper: {
-    position: 'absolute',
-    width: theme.spacing.unit * 50,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing.unit * 4,
-    outline: 'none'
+  whiteText: {
+    color: theme.palette.common.white
+  },
+  addIcon: {
+    fontSize: '1.65em'
   }
 });
 
@@ -50,6 +56,7 @@ export class Tags extends Component {
 
   handleClose = () => {
     this.setState({ open: false, newTag: '' });
+    this.props.clearSpecificErrors(['tag']);
   };
 
   onChange = e => {
@@ -60,17 +67,53 @@ export class Tags extends Component {
     this.props.deleteTagAtIndex(i);
   };
 
-  onSubmit = e => {
+  onSubmit = () => {
     const { newTag } = this.state;
 
-    if (newTag !== '') this.props.addNewTag(newTag);
+    // Validate input
+    if (newTag === '') {
+      this.props.setError({ tag: 'Tag content is required' });
+      return;
+    }
+
+    this.props.addNewTag(newTag);
 
     this.handleClose();
   };
 
   render() {
-    const { tags, classes } = this.props;
+    const { tags, classes, errors } = this.props;
     const { newTag, open } = this.state;
+
+    const dialog = (
+      <Dialog open={open} onClose={this.handleClose}>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="newTag"
+            label={!isEmpty(errors.tag) ? errors.tag : 'Add new tag'}
+            value={newTag}
+            onChange={this.onChange}
+            error={!isEmpty(errors.tag)}
+            fullWidth
+            required
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={this.handleClose}
+            color="inherit"
+            className={classes.whiteText}
+          >
+            Cancel
+          </Button>
+          <Button onClick={this.onSubmit} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
 
     return (
       <React.Fragment>
@@ -84,34 +127,18 @@ export class Tags extends Component {
             />
           ))}
           <Chip
-            label="Add"
+            label="Add tag"
             className={classes.chip}
-            deleteIcon={<Icon className="fas fa-plus-circle" />}
+            deleteIcon={
+              <Icon
+                className={classNames('fas fa-plus-circle', classes.addIcon)}
+              />
+            }
             onDelete={this.handleOpen}
             variant="outlined"
           />
         </div>
-        <Dialog open={open} onClose={this.handleClose}>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              name="newTag"
-              label="Add new tag"
-              value={newTag}
-              onChange={this.onChange}
-              fullWidth
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={this.onSubmit} color="primary">
-              Add
-            </Button>
-          </DialogActions>
-        </Dialog>
+        {dialog}
       </React.Fragment>
     );
   }
@@ -120,14 +147,21 @@ export class Tags extends Component {
 Tags.propTypes = {
   tags: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired,
   deleteTagAtIndex: PropTypes.func.isRequired,
-  addNewTag: PropTypes.func.isRequired
+  addNewTag: PropTypes.func.isRequired,
+  setError: PropTypes.func.isRequired,
+  clearSpecificErrors: PropTypes.func.isRequired
 };
+
+const mapStateToProps = state => ({
+  errors: state.errors
+});
 
 export default compose(
   withStyles(styles),
   connect(
-    null,
-    { deleteTagAtIndex, addNewTag }
+    mapStateToProps,
+    { deleteTagAtIndex, addNewTag, setError, clearSpecificErrors }
   )
 )(Tags);

@@ -7,6 +7,7 @@ import {
   addNewProject
 } from '../../../store/actions/projectsActions';
 
+import FormStepper from './FormStepper';
 import FormRepoSelector from './step-1/FormRepoSelector';
 import FormEditProject from './step-2/FormEditProject';
 import FormContributors from './step-3/FormContributors';
@@ -28,8 +29,6 @@ export class AddProject extends Component {
   componentWillReceiveProps(nextProps) {
     const { clearNewProjectRepoUrl } = this.props;
 
-    console.log(nextProps);
-
     if (
       nextProps.project.repoUrl !== undefined &&
       nextProps.project.repoUrl !== ''
@@ -47,6 +46,14 @@ export class AddProject extends Component {
       this.setState({ tags: nextProps.project.tags });
     if (nextProps.project.liveWebsiteUrl !== undefined)
       this.setState({ liveWebsiteUrl: nextProps.project.liveWebsiteUrl });
+    if (nextProps.project.contributorsChecked !== undefined)
+      this.setState({
+        contributorsChecked: nextProps.project.contributorsChecked
+      });
+    if (nextProps.project.contributorsDescription !== undefined)
+      this.setState({
+        contributorsDescription: nextProps.project.contributorsDescription
+      });
   }
 
   nextStep = ({ refetchRepoInStep2 = true } = {}) => {
@@ -111,35 +118,44 @@ export class AddProject extends Component {
     switch (step) {
       case 1:
         return (
-          <FormRepoSelector
-            nextStep={this.nextStep}
-            handleChange={this.handleChange}
-            values={{ repoUrl }}
-          />
+          <React.Fragment>
+            <FormStepper step={step} />
+            <FormRepoSelector
+              nextStep={this.nextStep}
+              handleChange={this.handleChange}
+              values={{ repoUrl }}
+            />
+          </React.Fragment>
         );
       case 2:
         return (
-          <FormEditProject
-            prevStep={this.prevStep}
-            nextStep={this.nextStep}
-            handleChange={this.handleChange}
-            values={{ liveWebsiteUrl, title, description, images, tags }}
-            repoUrl={repoUrl}
-            refetchRepo={refetchRepoInStep2}
-          />
+          <React.Fragment>
+            <FormStepper step={step} />
+            <FormEditProject
+              prevStep={this.prevStep}
+              nextStep={this.nextStep}
+              handleChange={this.handleChange}
+              values={{ liveWebsiteUrl, title, description, images, tags }}
+              repoUrl={repoUrl}
+              refetchRepo={refetchRepoInStep2}
+            />
+          </React.Fragment>
         );
       case 3:
         return (
-          <FormContributors
-            prevStep={this.prevStep}
-            onSubmit={this.onSubmit}
-            handleChange={this.handleChange}
-            handleSwitchChange={this.handleSwitchChange}
-            values={{
-              checked: contributorsChecked,
-              description: contributorsDescription
-            }}
-          />
+          <React.Fragment>
+            <FormStepper step={step} />
+            <FormContributors
+              prevStep={this.prevStep}
+              onSubmit={this.onSubmit}
+              handleChange={this.handleChange}
+              handleSwitchChange={this.handleSwitchChange}
+              values={{
+                checked: contributorsChecked,
+                description: contributorsDescription
+              }}
+            />
+          </React.Fragment>
         );
       default:
         return null;

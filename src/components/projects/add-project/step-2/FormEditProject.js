@@ -25,13 +25,15 @@ import Tags from './Tags';
 import ImageGallery from './ImageGallery';
 
 const styles = theme => ({
-  paper: { ...theme.customs.paper },
-  title: {
-    marginTop: theme.spacing.unit * 4,
-    marginBottom: theme.spacing.unit * 4
-  },
+  paper: { ...theme.customs.paper, marginTop: 0 },
   primary: {
     color: theme.palette.primary.main
+  },
+  title: {
+    marginBottom: theme.spacing.unit * 4
+  },
+  input: {
+    marginTop: theme.spacing.unit * 4
   },
   button: {
     marginTop: theme.spacing.unit * 4
@@ -39,10 +41,6 @@ const styles = theme => ({
 });
 
 export class FormEditProject extends Component {
-  nextStep = () => {
-    this.props.nextStep();
-  };
-
   componentDidMount() {
     const {
       repoUrl,
@@ -117,6 +115,8 @@ export class FormEditProject extends Component {
               fullWidth
               value={title}
               error={!isEmpty(errors.title)}
+              className={classes.input}
+              required
             />
             <TextField
               placeholder="Enter project description here"
@@ -130,6 +130,8 @@ export class FormEditProject extends Component {
               fullWidth
               value={description}
               error={!isEmpty(errors.description)}
+              className={classes.input}
+              required
               multiline
             />
             <TextField
@@ -139,25 +141,38 @@ export class FormEditProject extends Component {
               onChange={handleChange}
               fullWidth
               value={liveWebsiteUrl}
+              className={classes.input}
             />
             <Tags tags={tags} />
             <ImageGallery images={images} />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={this.prevStep}
-              className={classes.button}
-            >
-              Back
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={this.nextStep}
-              className={classes.button}
-            >
-              Continue
-            </Button>
+            <Grid container spacing={16}>
+              <Grid item xs={3}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={this.prevStep}
+                  className={classes.button}
+                  fullWidth
+                >
+                  <i
+                    className="fas fa-arrow-left"
+                    style={{ fontSize: '1.1em', marginRight: '0.5em' }}
+                  />
+                  Back
+                </Button>
+              </Grid>
+              <Grid item xs={9}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={this.nextStep}
+                  className={classes.button}
+                  fullWidth
+                >
+                  Continue
+                </Button>
+              </Grid>
+            </Grid>
           </Paper>
         </Grid>
       </GridContainer>

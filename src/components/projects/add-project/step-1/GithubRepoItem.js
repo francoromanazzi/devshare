@@ -7,8 +7,6 @@ import { setNewProjectRepoUrl } from '../../../../store/actions/projectsActions'
 import { ListItem, ListItemText } from '@material-ui/core';
 
 const GithubRepoItem = props => {
-  console.log(props.repo);
-
   const onRepoClick = () => {
     props.setNewProjectRepoUrl(props.repo.html_url);
   };

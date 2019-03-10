@@ -1,5 +1,6 @@
 export const GET_ERRORS = 'GET_ERRORS';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
+export const CLEAR_SPECIFIC_ERRORS = 'CLEAR_SPECIFIC_ERRORS';
 
 export const REPOS_LOADING = 'REPOS_LOADING';
 export const GET_REPOS = 'GET_REPOS';
@@ -12,4 +13,5 @@ export const DELETE_TAG_AT_INDEX = 'DELETE_TAG_AT_INDEX';
 export const ADD_TAG = 'ADD_TAG';
 export const DELETE_IMAGE_AT_INDEX = 'DELETE_IMAGE_AT_INDEX';
 export const ADD_IMAGE = 'ADD_IMAGE';
+export const CHANGE_IMAGE_TITLE = 'CHANGE_IMAGE_TITLE';
 export const CLEAR_PROJECT = 'CLEAR_PROJECT';

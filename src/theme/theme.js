@@ -15,9 +15,10 @@ export default createMuiTheme({
     error: { main: '#ED4837' },
     background: {
       default: '#212C3D',
-      paper: '#43526D',
       light1: '#29374A',
-      light2: '#43526D'
+      light2: '#43526D',
+      paper: '#43526D',
+      paperLight: '#56698c'
     },
 
     contrastThreshold: 3,
