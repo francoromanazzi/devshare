@@ -1,0 +1,13 @@
+[debug] [2019-03-11T23:11:13.944Z] ----------------------------------------------------------------------
+[debug] [2019-03-11T23:11:13.948Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Franco\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2019-03-11T23:11:13.948Z] CLI Version:   6.4.0
+[debug] [2019-03-11T23:11:13.948Z] Platform:      win32
+[debug] [2019-03-11T23:11:13.948Z] Node Version:  v9.11.1
+[debug] [2019-03-11T23:11:13.948Z] Time:          Mon Mar 11 2019 20:11:13 GMT-0300 (Hora estándar de Argentina)
+[debug] [2019-03-11T23:11:13.948Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-03-11T23:11:13.961Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-03-11T23:11:13.962Z] > authorizing via signed-in user
+[debug] [2019-03-11T23:11:13.962Z] [iam] checking project devshare-8832f for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2019-03-11T23:11:13.963Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/devshare-8832f:testIamPermissions  
+
