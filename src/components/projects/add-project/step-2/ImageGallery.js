@@ -44,9 +44,9 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 4
   },
   gridList: {
-    flexWrap: 'nowrap',
+    //flexWrap: 'nowrap',
     // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
-    transform: 'translateZ(0)'
+    //transform: 'translateZ(0)'
   },
   title: {
     color: theme.palette.common.white
@@ -78,7 +78,7 @@ const styles = theme => ({
     border: '2px dashed white',
     borderRadius: '25px',
 
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paperLight2,
     '&:hover': {
       backgroundColor: theme.palette.background.paperLight,
       transition: 'background-color 0.25s'
@@ -247,12 +247,8 @@ export class ImageGallery extends Component {
                 />
               </GridListTile>
             ))}
-          <GridListTile className={classes.addNewImageTileContainer}>
-            <div
-              className={classes.addNewImageTile}
-              style={{ cursor: 'pointer' }}
-              onClick={this.handleUploadOpen}
-            >
+          <GridListTile>
+            <div style={{ cursor: 'pointer' }} onClick={this.handleUploadOpen}>
               <Typography variant="h6" color="primary">
                 Add new image
               </Typography>
