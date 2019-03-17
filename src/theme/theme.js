@@ -20,6 +20,9 @@ export default createMuiTheme({
       paper: '#43526D',
       paperLight: '#56698c'
     },
+    common: {
+      gray: '#B0B0B0'
+    },
 
     contrastThreshold: 3,
     tonalOffset: 0.2

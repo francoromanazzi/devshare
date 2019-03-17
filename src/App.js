@@ -7,7 +7,8 @@ import Login from './components/auth/Login';
 import Landing from './components/landing/Landing';
 import Dashboard from './components/dashboard/Dashboard';
 import AddProject from './components/projects/add-project/AddProject';
-import EditProject from './components/projects/EditProject';
+import EditProject from './components/projects/edit-project/EditProject';
+import NotFound from './components/not-found/NotFound';
 
 import './App.css';
 
@@ -27,6 +28,7 @@ class App extends Component {
               path="/projects/:projectId"
               component={Auth(EditProject)}
             />
+            <Route component={NotFound} />
           </Switch>
         </div>
       </Router>

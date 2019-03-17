@@ -2,6 +2,7 @@ import {
   SET_NEW_PROJECT_REPO_URL,
   CLEAR_NEW_PROJECT_REPO_URL,
   PROJECTS_LOADING,
+  PROJECTS_LOADED,
   GET_PROJECT,
   DELETE_TAG_AT_INDEX,
   ADD_TAG,
@@ -48,6 +49,11 @@ export default function(state = initState, action) {
       return {
         ...state,
         loading: true
+      };
+    case PROJECTS_LOADED:
+      return {
+        ...state,
+        loading: false
       };
     case GET_PROJECT:
       return {

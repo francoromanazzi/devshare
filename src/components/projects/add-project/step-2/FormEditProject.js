@@ -89,7 +89,7 @@ export class FormEditProject extends Component {
       values: { title, liveWebsiteUrl, description, images, tags },
       handleChange,
       errors,
-      projects: { project, loading },
+      projects: { loading },
       classes
     } = this.props;
 

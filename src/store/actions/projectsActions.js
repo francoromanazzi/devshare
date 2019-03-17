@@ -3,6 +3,7 @@ import {
   SET_NEW_PROJECT_REPO_URL,
   CLEAR_NEW_PROJECT_REPO_URL,
   PROJECTS_LOADING,
+  PROJECTS_LOADED,
   GET_ERRORS,
   GET_PROJECT,
   DELETE_TAG_AT_INDEX,
@@ -63,7 +64,7 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
           newProject.tags = res[1].data.names;
 
           // If README.md doesn't exist
-          if (res[0].status == 404) {
+          if (res[0].status === 404) {
             newProject.images = [];
             return dispatch({
               type: GET_PROJECT,
@@ -76,6 +77,15 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
           let imageUrlMatches = readmeText.match(
             /(\/(.*))*\.(bmp|png|jpg|jpeg)/gim
           );
+
+          // No images in readme
+          if (imageUrlMatches === null || imageUrlMatches === []) {
+            newProject.images = [];
+            return dispatch({
+              type: GET_PROJECT,
+              payload: { project: newProject }
+            });
+          }
 
           imageUrlMatches = imageUrlMatches.map(imageUrl =>
             axios.get(
@@ -90,7 +100,7 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
               newProject.images = res.map(image => {
                 // Get image title from url
                 let imageTitle = image.data.download_url.match(
-                  /\/([^\/])+\.(bmp|png|jpg|jpeg)/gim
+                  /[/]([^/])+\.(bmp|png|jpg|jpeg)/gim
                 )[0]; // Example: '/Picture.jpg'
                 // Remove starting and ending
                 imageTitle = imageTitle.slice(1, imageTitle.indexOf('.'));
@@ -128,7 +138,7 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
 };
 
 // Add new project
-export const addNewProject = newProject => (
+export const addNewProject = (newProject, history) => (
   dispatch,
   getState,
   { getFirebase, getFirestore }
@@ -144,9 +154,11 @@ export const addNewProject = newProject => (
     contributorsDescription
   } = newProject;
 
+  dispatch(setProjectsLoading());
+
   const firestore = getFirestore();
   const firebase = getFirebase();
-  const { profile, auth } = getState().firebase;
+  const { auth } = getState().firebase;
 
   // 1. Prepare new document to save later (so that we can access the random id now)
   const docRef = firestore.collection('projects').doc();
@@ -183,8 +195,16 @@ export const addNewProject = newProject => (
   );
 
   Promise.all([saveProjectInFirestorePromise, uploadImagesPromise])
-    .then(console.log)
-    .catch(console.error);
+    .then(() => {
+      dispatch(setProjectsLoaded());
+      history.push('/');
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: { repoUrl: err.response.data }
+      })
+    );
 };
 
 // Remove tag from tags array
@@ -231,6 +251,13 @@ export const changeImageTitle = (oldTitle, newTitle) => {
 export const setProjectsLoading = () => {
   return {
     type: PROJECTS_LOADING
+  };
+};
+
+// End loading state
+export const setProjectsLoaded = () => {
+  return {
+    type: PROJECTS_LOADED
   };
 };
 

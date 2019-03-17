@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
-import isEmpty from '../../../../utils/is-empty';
 
 import { getReposFromUser } from '../../../../store/actions/reposActions';
 

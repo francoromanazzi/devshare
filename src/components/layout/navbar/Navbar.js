@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
-import classNames from 'classnames';
 
 import {
   AppBar,
@@ -11,26 +10,26 @@ import {
   IconButton,
   Typography,
   InputBase,
-  Badge,
-  MenuItem,
-  Menu,
-  Tab
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Icon
 } from '@material-ui/core/';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
 
 import AuthLinks from './AuthLinks';
 import GuestLinks from './GuestLinks';
 
 const styles = theme => ({
   root: {
-    width: '100%'
+    width: '100%',
+    height: '48px' // Push everything else down (because of fixed appbar)
   },
   grow: {
     flexGrow: 1
@@ -40,10 +39,7 @@ const styles = theme => ({
     marginRight: 20
   },
   title: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block'
-    }
+    display: 'block'
   },
   search: {
     position: 'relative',
@@ -53,12 +49,8 @@ const styles = theme => ({
       backgroundColor: fade(theme.palette.common.white, 0.25)
     },
     marginRight: theme.spacing.unit * 2,
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing.unit * 3,
-      width: 'auto'
-    }
+    marginLeft: theme.spacing.unit * 3,
+    width: 'auto'
   },
   searchIcon: {
     width: theme.spacing.unit * 9,
@@ -107,162 +99,138 @@ const styles = theme => ({
       '& span': {
         color: fade(theme.palette.primary.main, 0.25)
       }
+    },
+    [theme.breakpoints.up('md')]: {
+      marginRight: 20
     }
   },
   primary: {
     color: theme.palette.primary.main
+  },
+  list: {
+    width: 250
   }
 });
 
-class PrimarySearchAppBar extends React.Component {
+export class PrimarySearchAppBar extends Component {
   state = {
-    anchorEl: null,
-    mobileMoreAnchorEl: null
+    menuOpen: false
   };
 
-  handleProfileMenuOpen = event => {
-    this.setState({ anchorEl: event.currentTarget });
+  toggleDrawer = value => {
+    this.setState({ menuOpen: value });
   };
-
-  handleMenuClose = () => {
-    this.setState({ anchorEl: null });
-    this.handleMobileMenuClose();
-  };
-
-  handleMobileMenuOpen = event => {
-    this.setState({ mobileMoreAnchorEl: event.currentTarget });
-  };
-
-  handleMobileMenuClose = () => {
-    this.setState({ mobileMoreAnchorEl: null });
-  };
-
-  handleDrawerToggle = () => {};
 
   render() {
-    const { anchorEl, mobileMoreAnchorEl } = this.state;
-    const { classes } = this.props;
-    const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const { classes, auth } = this.props;
+    const { menuOpen } = this.state;
 
-    const renderMenu = (
-      <Menu
-        anchorEl={anchorEl}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={isMenuOpen}
-        onClose={this.handleMenuClose}
-      >
-        <MenuItem onClick={this.handleMenuClose}>Profile</MenuItem>
-        <MenuItem onClick={this.handleMenuClose}>My account</MenuItem>
-      </Menu>
+    const content = auth.isEmpty ? <GuestLinks /> : <AuthLinks />;
+
+    const searchDesktop = (
+      <div className={classes.sectionDesktop}>
+        <div className={classes.search}>
+          <div className={classes.searchIcon}>
+            <SearchIcon />
+          </div>
+          <InputBase
+            placeholder="Search…"
+            classes={{
+              root: classes.inputRoot,
+              input: classes.inputInput
+            }}
+          />
+        </div>
+      </div>
     );
 
-    const renderMobileMenu = (
-      <Menu
-        anchorEl={mobileMoreAnchorEl}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={isMobileMenuOpen}
-        onClose={this.handleMenuClose}
-      >
-        <MenuItem onClick={this.handleMobileMenuClose}>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <MailIcon />
-            </Badge>
-          </IconButton>
-          <p>Messages</p>
-        </MenuItem>
-        <MenuItem onClick={this.handleMobileMenuClose}>
-          <IconButton color="inherit">
-            <Badge badgeContent={11} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <p>Notifications</p>
-        </MenuItem>
-        <MenuItem onClick={this.handleProfileMenuOpen}>
-          <IconButton color="inherit">
-            <AccountCircle />
-          </IconButton>
-          <p>Profile</p>
-        </MenuItem>
-      </Menu>
+    const searchMobile = (
+      <div className={classes.sectionMobile}>
+        <IconButton
+          aria-haspopup="true"
+          onClick={() => {
+            console.log('search');
+          }}
+          color="inherit"
+        >
+          <SearchIcon />
+        </IconButton>
+      </div>
+    );
+
+    const menuDrawer = (
+      <Drawer open={menuOpen} onClose={this.toggleDrawer.bind(this, false)}>
+        <div
+          tabIndex={0}
+          role="button"
+          onClick={this.toggleDrawer.bind(this, false)}
+          onKeyDown={this.toggleDrawer.bind(this, false)}
+        >
+          <div className={classes.list}>
+            <List>
+              <ListItem button>
+                <ListItemIcon>
+                  <Icon className={'fas fa-home'} />
+                </ListItemIcon>
+                <ListItemText primary="Home" />
+              </ListItem>
+              {['Inbox', 'Starred', 'Send email', 'Drafts'].map(text => (
+                <ListItem button key={text}>
+                  <ListItemIcon>
+                    <SearchIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
+            <List>
+              {['Search'].map(text => (
+                <ListItem button key={text}>
+                  <ListItemIcon>
+                    <SearchIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItem>
+              ))}
+            </List>
+          </div>
+        </div>
+      </Drawer>
     );
 
     return (
       <div className={classes.root}>
-        <AppBar position="static" color="default" className={classes.appBar}>
-          <Toolbar>
+        <AppBar position="fixed" color="default" className={classes.appBar}>
+          <Toolbar variant="dense">
             <IconButton
               className={classes.menuButton}
               color="inherit"
               aria-label="Open drawer"
+              onClick={this.toggleDrawer.bind(this, true)}
             >
               <MenuIcon />
             </IconButton>
+            {menuDrawer}
 
             <Link to="/" className={classes.brand}>
               <Typography
                 className={classes.title}
-                variant="h6"
+                variant="h5"
                 color="inherit"
                 noWrap
               >
-                Dev
-                <span className={classNames(classes.primary, classes.brand)}>
-                  Share
-                </span>
+                {'<'}
+                <span className={classes.primary}>{'ds'}</span>
+                {' />'}
               </Typography>
             </Link>
-
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <InputBase
-                placeholder="Search…"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput
-                }}
-              />
-            </div>
+            {searchDesktop}
             <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-              <IconButton color="inherit">
-                <Badge badgeContent={4} color="secondary">
-                  <MailIcon />
-                </Badge>
-              </IconButton>
-              <IconButton color="inherit">
-                <Badge badgeContent={17} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-                aria-haspopup="true"
-                onClick={this.handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-            </div>
-            <div className={classes.sectionMobile}>
-              <IconButton
-                aria-haspopup="true"
-                onClick={this.handleMobileMenuOpen}
-                color="inherit"
-              >
-                <MoreIcon />
-              </IconButton>
-            </div>
+            {searchMobile}
+            {content}
           </Toolbar>
         </AppBar>
-        {renderMenu}
-        {renderMobileMenu}
       </div>
     );
   }

@@ -27,18 +27,9 @@ export class Landing extends Component {
 
     return (
       <Paper className={classes.root}>
-        <Typography variant="h3" align="center" gutterBottom>
-          {auth.email}
+        <Typography variant="h2" align="center" gutterBottom>
+          Home
         </Typography>
-        <form>
-          <TextField
-            name="title"
-            label="Exercise"
-            value={title}
-            onChange={this.handleChange}
-            margin="normal"
-          />
-        </form>
       </Paper>
     );
   }

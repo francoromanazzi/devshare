@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -89,16 +91,19 @@ export class AddProject extends Component {
       contributorsChecked,
       contributorsDescription
     } = this.state;
-    this.props.addNewProject({
-      repoUrl,
-      liveWebsiteUrl,
-      title,
-      description,
-      images,
-      tags,
-      contributorsChecked,
-      contributorsDescription
-    });
+    this.props.addNewProject(
+      {
+        repoUrl,
+        liveWebsiteUrl,
+        title,
+        description,
+        images,
+        tags,
+        contributorsChecked,
+        contributorsDescription
+      },
+      this.props.history
+    );
   };
 
   render() {
@@ -173,7 +178,10 @@ const mapStateToProps = state => ({
   project: state.projects.project
 });
 
-export default connect(
-  mapStateToProps,
-  { clearNewProjectRepoUrl, addNewProject }
+export default compose(
+  withRouter,
+  connect(
+    mapStateToProps,
+    { clearNewProjectRepoUrl, addNewProject }
+  )
 )(AddProject);
