@@ -182,7 +182,8 @@ export const addNewProject = (newProject, history) => (
     tags,
     imagesWithStorageRefs,
     contributorsChecked,
-    contributorsDescription
+    contributorsDescription,
+    createdAt: new Date()
   });
 
   const uploadImagesPromise = Promise.all(

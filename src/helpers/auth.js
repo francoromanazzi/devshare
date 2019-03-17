@@ -21,7 +21,7 @@ export const NotAuth = connectedRouterRedirect({
   AuthenticatingComponent: LoadingScreen,
   allowRedirectBack: false,
   redirectPath: (state, ownProps) =>
-    locationHelper.getRedirectQueryParam(ownProps) || '/',
+    locationHelper.getRedirectQueryParam(ownProps) || '/dashboard',
   authenticatingSelector: ({ firebase: { auth, profile, isInitializing } }) =>
     !auth.isLoaded || !profile.isLoaded || isInitializing === true,
   authenticatedSelector: ({ firebase: { auth, profile } }) =>

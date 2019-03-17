@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Auth, NotAuth } from './helpers/auth';
 
+import Spinner from './components/common/spinner/Spinner';
 import Navbar from './components/layout/navbar/Navbar';
 import Login from './components/auth/Login';
 import Landing from './components/landing/Landing';
@@ -14,7 +17,10 @@ import './App.css';
 
 class App extends Component {
   render() {
-    return (
+    const { auth, profile } = this.props;
+    return !auth.isLoaded || !profile.isLoaded ? (
+      <Spinner />
+    ) : (
       <Router>
         <div className="App">
           <Navbar />
@@ -36,4 +42,14 @@ class App extends Component {
   }
 }
 
-export default App;
+App.propTypes = {
+  auth: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.firebase.auth,
+  profile: state.firebase.profile
+});
+
+export default connect(mapStateToProps)(App);
