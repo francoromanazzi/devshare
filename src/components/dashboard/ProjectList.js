@@ -20,7 +20,7 @@ const ProjectList = ({ projects }) => {
 };
 
 ProjectList.propTypes = {
-  projects: PropTypes.object
+  projects: PropTypes.array
 };
 
 const mapStateToProps = state => ({

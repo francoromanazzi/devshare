@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { withFirebase, withFirestore } from 'react-redux-firebase';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -171,17 +172,28 @@ export class AddProject extends Component {
 AddProject.propTypes = {
   project: PropTypes.object.isRequired,
   clearNewProjectRepoUrl: PropTypes.func.isRequired,
-  addNewProject: PropTypes.func.isRequired
+  addNewProject: PropTypes.func.isRequired,
+  firebase: PropTypes.object.isRequired,
+  firestore: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   project: state.projects.project
 });
 
+const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({
+  clearNewProjectRepoUrl: (...args) =>
+    dispatch(clearNewProjectRepoUrl(...args)),
+  addNewProject: (...args) =>
+    dispatch(addNewProject(...args, { firebase, firestore }))
+});
+
 export default compose(
+  withFirebase,
+  withFirestore,
   withRouter,
   connect(
     mapStateToProps,
-    { clearNewProjectRepoUrl, addNewProject }
+    mapDispatchToProps
   )
 )(AddProject);

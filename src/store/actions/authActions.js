@@ -1,14 +1,6 @@
 // Sign up a new user with a GitHub popup
-export const signUp = () => (
-  dispatch,
-  getState,
-  { getFirebase, getFirestore }
-) => {
-  const firebase = getFirebase();
-  const firestore = getFirestore();
-
-  var provider = new firebase.auth.GithubAuthProvider();
-  provider.addScope('repo');
+export const signUp = ({ firebase, firestore }) => dispatch => {
+  const provider = new firebase.auth.GithubAuthProvider();
 
   firebase
     .auth()

@@ -138,10 +138,9 @@ export const getFullRepoFromUserByUrl = (username, repoUrl) => dispatch => {
 };
 
 // Add new project
-export const addNewProject = (newProject, history) => (
+export const addNewProject = (newProject, history, { firebase, firestore }) => (
   dispatch,
-  getState,
-  { getFirebase, getFirestore }
+  getState
 ) => {
   const {
     repoUrl,
@@ -156,8 +155,6 @@ export const addNewProject = (newProject, history) => (
 
   dispatch(setProjectsLoading());
 
-  const firestore = getFirestore();
-  const firebase = getFirebase();
   const { auth } = getState().firebase;
 
   // 1. Prepare new document to save later (so that we can access the random id now)

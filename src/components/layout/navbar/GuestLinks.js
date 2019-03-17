@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { withFirebase, withFirestore } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
@@ -39,10 +40,16 @@ GuestLinks.propTypes = {
   signUp: PropTypes.func.isRequired
 };
 
+const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({
+  signUp: () => dispatch(signUp({ firebase, firestore }))
+});
+
 export default compose(
+  withFirebase,
+  withFirestore,
   withStyles(styles),
   connect(
     null,
-    { signUp }
+    mapDispatchToProps
   )
 )(GuestLinks);
