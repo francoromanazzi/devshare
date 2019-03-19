@@ -1,25 +1,46 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { firestoreConnect } from 'react-redux-firebase';
+import { withFirebase, withFirestore } from 'react-redux-firebase';
 
-import { List } from '@material-ui/core';
+import { getProjects } from '../../store/actions/projectsActions';
+
+import { withStyles } from '@material-ui/core';
 import ProjectItem from './ProjectItem';
 
-const ProjectList = ({ projects }) => {
-  console.log(projects);
-  return (
-    <List>
-      {projects &&
-        projects.map(project => (
-          <ProjectItem key={project.uid} project={project} />
-        ))}
-    </List>
-  );
-};
+const styles = theme => ({
+  root: {
+    marginTop: theme.spacing.unit * 2
+  }
+});
+
+export class ProjectList extends Component {
+  componentDidMount() {
+    this.props.getProjects();
+  }
+
+  componentWillUnmount() {
+    this.props.firestore.unsetListener({ collection: 'projects' });
+  }
+
+  render() {
+    const { classes, projects } = this.props;
+    return (
+      <div className={classes.root}>
+        {projects &&
+          projects.map(project => (
+            <ProjectItem key={project.id} project={project} />
+          ))}
+      </div>
+    );
+  }
+}
 
 ProjectList.propTypes = {
+  classes: PropTypes.object.isRequired,
+  firebase: PropTypes.object.isRequired,
+  firestore: PropTypes.object.isRequired,
   projects: PropTypes.array
 };
 
@@ -27,7 +48,17 @@ const mapStateToProps = state => ({
   projects: state.firestore.ordered.projects
 });
 
+const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({
+  getProjects: (...args) =>
+    dispatch(getProjects(...args, { firebase, firestore }))
+});
+
 export default compose(
-  connect(mapStateToProps),
-  firestoreConnect([{ collection: 'projects', orderBy: ['createdAt', 'desc'] }])
+  withFirebase,
+  withFirestore,
+  withStyles(styles),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(ProjectList);

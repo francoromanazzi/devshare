@@ -11,7 +11,8 @@ import {
   DELETE_IMAGE_AT_INDEX,
   ADD_IMAGE,
   CLEAR_PROJECT,
-  CHANGE_IMAGE_TITLE
+  CHANGE_IMAGE_TITLE,
+  PROJECT_IMAGES_URLS
 } from '../actions/types';
 
 // Set github repo url when adding a new project
@@ -203,6 +204,51 @@ export const addNewProject = (newProject, history, { firebase, firestore }) => (
         payload: { repoUrl: err.response.data }
       })
     );
+};
+
+// Get all projects from firestore
+export const getProjects = ({ firebase, firestore }) => (
+  dispatch,
+  getState
+) => {
+  dispatch(setProjectsLoading());
+  firestore.onSnapshot(
+    { collection: 'projects', orderBy: ['createdAt', 'desc'] },
+    () => {
+      const { projects } = getState().firestore.ordered;
+      for (let project of projects) {
+        const images = project.imagesWithStorageRefs;
+        if (images.length > 0) {
+          Promise.all(
+            images.map(img => {
+              return firebase
+                .storage()
+                .ref(img.storageRef)
+                .getDownloadURL();
+            })
+          )
+            .then(res => {
+              dispatch({
+                type: PROJECT_IMAGES_URLS,
+                payload: { id: project.id, images: res }
+              });
+            })
+            .catch(error => {
+              dispatch({
+                type: GET_ERRORS,
+                payload: { error }
+              });
+            });
+        }
+      }
+    },
+    error => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: { error }
+      });
+    }
+  );
 };
 
 // Remove tag from tags array

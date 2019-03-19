@@ -9,11 +9,13 @@ import {
   DELETE_IMAGE_AT_INDEX,
   ADD_IMAGE,
   CLEAR_PROJECT,
-  CHANGE_IMAGE_TITLE
+  CHANGE_IMAGE_TITLE,
+  PROJECT_IMAGES_URLS
 } from '../actions/types';
 
 const initState = {
   projects: [],
+  projectsImages: [],
   project: {
     repoUrl: '',
     liveWebsiteUrl: '',
@@ -112,6 +114,20 @@ export default function(state = initState, action) {
           ...state.project,
           ...initState.project
         }
+      };
+    case PROJECT_IMAGES_URLS:
+      const projectExisted =
+        state.projects.filter(project => project.id === action.payload.id)
+          .length > 0;
+      const projectsImages = projectExisted
+        ? state.projects.map(project =>
+            project.id === action.payload.id ? action.payload : project
+          )
+        : [...state.projects, action.payload];
+      return {
+        ...state,
+        projectsImages,
+        loading: false
       };
     default:
       return state;
