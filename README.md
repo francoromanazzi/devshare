@@ -10,7 +10,7 @@ Live demo: https://devshare-8832f.firebaseapp.com/
 
 ![Landing](/docs/screenshots/Landing.png?raw=true 'Landing page')
 
-## Built with React, completely serverless
+## Built with React. Completely serverless
 
 - **Frontend**: React, Redux, Material-UI
 - **Backend**: Firebase (firestore & storage)
