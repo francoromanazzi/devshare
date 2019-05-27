@@ -1,49 +1,98 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
+import { withFirebase, withFirestore } from 'react-redux-firebase';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import classNames from 'classnames';
 
-import { withStyles, Typography, TextField, Paper } from '@material-ui/core';
+import { signUp } from '../../store/actions/authActions';
 
-const styles = {
+import TypedAnimation from './TypedAnimation';
+import { withStyles, Typography, Button, Icon, Grid } from '@material-ui/core';
+import GridContainer from '../common/grid-container/GridContainer';
+
+import './Landing.css';
+
+const styles = theme => ({
   root: {
-    backgroundColor: 'red'
+    marginTop: theme.spacing.unit * 8
+  },
+  title: {
+    marginBottom: theme.spacing.unit * 4
+  },
+  white: {
+    color: theme.palette.common.white
+  },
+  primary: {
+    color: theme.palette.primary.main
+  },
+  signUpButton: {
+    backgroundColor: theme.palette.common.white,
+    justifyContent: 'center'
+  },
+  githubIcon: {
+    marginLeft: '0.5rem'
   }
+});
+
+const Landing = ({ classes, signUp }) => {
+  return (
+    <div className="landing-img">
+      <div className="dark-overlay-img landing-inner">
+        <div className="dark-overlay-card">
+          <div className={classes.root}>
+            <GridContainer alignItems="center">
+              <Grid item>
+                <Typography
+                  className={classNames(classes.title, classes.white)}
+                  variant="h2"
+                  color="inherit"
+                  noWrap
+                  gutterBottom
+                >
+                  {'<'}
+                  <span className={classes.primary}>{'DevShare'}</span>
+                  {' />'}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <TypedAnimation />
+              </Grid>
+              <Grid item>
+                <Button
+                  onClick={signUp}
+                  color="inherit"
+                  className={classes.signUpButton}
+                >
+                  Join for free
+                  <Icon
+                    className={classNames('fab fa-github', classes.githubIcon)}
+                  />
+                </Button>
+              </Grid>
+            </GridContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
-
-export class Landing extends Component {
-  state = {
-    title: ''
-  };
-
-  handleChange = ({ target: { name, value } }) =>
-    this.setState({
-      [name]: value
-    });
-
-  render() {
-    const { title } = this.state;
-    const { auth, classes } = this.props;
-
-    return (
-      <Paper className={classes.root}>
-        <Typography variant="h2" align="center" gutterBottom>
-          Home
-        </Typography>
-      </Paper>
-    );
-  }
-}
 
 Landing.propTypes = {
-  auth: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  signUp: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  auth: state.firebase.auth
+const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({
+  signUp: () => dispatch(signUp({ firebase, firestore }))
 });
 
 export default compose(
+  withFirebase,
+  withFirestore,
   withStyles(styles),
-  connect(mapStateToProps)
+  connect(
+    null,
+    mapDispatchToProps
+  )
 )(Landing);
