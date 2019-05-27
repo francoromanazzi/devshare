@@ -14,7 +14,7 @@ const styles = theme => ({
   text: {
     color: theme.palette.common.white,
     fontSize: '1.8rem',
-    fontWeight: '500'
+    fontWeight: '400'
   },
   primary: {
     color: theme.palette.primary.main
