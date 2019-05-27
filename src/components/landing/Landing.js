@@ -15,7 +15,10 @@ import './Landing.css';
 
 const styles = theme => ({
   root: {
-    marginTop: theme.spacing.unit * 4
+    marginTop: '15vh'
+  },
+  innerRoot: {
+    padding: theme.spacing.unit * 4
   },
   title: {
     marginBottom: theme.spacing.unit * 4
@@ -41,7 +44,7 @@ const Landing = ({ classes, signUp }) => {
       <div className="dark-overlay-img landing-inner">
         <div className="dark-overlay-card">
           <div className={classes.root}>
-            <GridContainer alignItems="center">
+            <GridContainer alignItems="center" className={classes.innerRoot}>
               <Grid item>
                 <Typography
                   className={classNames(classes.title, classes.white)}

@@ -13,7 +13,7 @@ const styles = theme => ({
   },
   text: {
     color: theme.palette.common.white,
-    fontSize: '30px',
+    fontSize: '1.8rem',
     fontWeight: '500'
   },
   primary: {
@@ -26,7 +26,7 @@ class TypedAnimation extends Component {
     const strings = [
       'Share your projects.',
       'Look for contributors.',
-      "Discover other developers' projects."
+      'Discover other projects.'
     ];
 
     const options = {
