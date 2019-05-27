@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import { withStyles } from '@material-ui/core';
 
@@ -31,9 +32,9 @@ class TypedAnimation extends Component {
     const options = {
       strings: strings,
       startDelay: 1500,
-      typeSpeed: 45,
+      typeSpeed: 40,
       backSpeed: 50,
-      backDelay: 500,
+      backDelay: 600,
       loop: true,
       showCursor: true
     };
@@ -50,10 +51,10 @@ class TypedAnimation extends Component {
 
   render() {
     return (
-      <div className={this.props.classes.root}>
+      <div
+        className={classNames(this.props.classes.root, this.props.classes.text)}
+      >
         <span
-          style={{ whiteSpace: 'pre' }}
-          className={this.props.classes.text}
           ref={el => {
             this.el = el;
           }}

@@ -15,7 +15,7 @@ import './Landing.css';
 
 const styles = theme => ({
   root: {
-    marginTop: theme.spacing.unit * 8
+    marginTop: theme.spacing.unit * 4
   },
   title: {
     marginBottom: theme.spacing.unit * 4
