@@ -119,14 +119,14 @@ export default function(state = initState, action) {
         }
       };
     case PROJECT_IMAGES_URLS:
-      const projectExisted =
-        state.projects.filter(project => project.id === action.payload.id)
+      const projectImagesExisted =
+        state.projectsImages.filter(img => img.id === action.payload.id)
           .length > 0;
-      const projectsImages = projectExisted
-        ? state.projects.map(project =>
-            project.id === action.payload.id ? action.payload : project
+      const projectsImages = projectImagesExisted
+        ? state.projectsImages.map(img =>
+            img.id === action.payload.id ? action.payload : img
           )
-        : [...state.projects, action.payload];
+        : [...state.projectsImages, action.payload];
       return {
         ...state,
         projectsImages,

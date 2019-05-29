@@ -12,7 +12,20 @@ import { getProject } from '../../../store/actions/projectsActions';
 
 import Spinner from '../../common/spinner/Spinner';
 import GridContainer from '../../common/grid-container/GridContainer';
-import { withStyles, Grid, Paper, Typography } from '@material-ui/core';
+import {
+  withStyles,
+  Grid,
+  Paper,
+  Typography,
+  Chip,
+  GridList,
+  GridListTile,
+  GridListTileBar,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button
+} from '@material-ui/core';
 
 const styles = theme => ({
   paper: { ...theme.customs.paper },
@@ -21,23 +34,118 @@ const styles = theme => ({
   },
   title: {
     marginBottom: theme.spacing.unit * 4
+  },
+  tags: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  chip: {
+    margin: theme.spacing.unit
+  },
+  images: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+    backgroundColor: theme.palette.background.paper,
+    marginTop: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 4
+  },
+  gridList: {
+    flexWrap: 'nowrap',
+    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+    transform: 'translateZ(0)'
+  },
+  whiteText: {
+    color: theme.palette.common.white
+  },
+  titleBar: {
+    background:
+      'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 70%, rgba(0,0,0,0) 100%)'
   }
 });
 
 export class Project extends Component {
+  state = {
+    zoomDialog: {
+      open: false,
+      currentImg: {}
+    }
+  };
+
+  handleZoomOpen = img => {
+    this.setState(prevState => ({
+      zoomDialog: {
+        ...prevState.zoomDialog,
+        open: true,
+        currentImg: img
+      }
+    }));
+  };
+
+  handleZoomClose = () => {
+    this.setState(prevState => ({
+      zoomDialog: {
+        ...prevState.zoomDialog,
+        open: false,
+        currentImg: {}
+      }
+    }));
+  };
+
   componentDidMount() {
     this.props.getProject(this.props.match.params.projectId);
   }
 
   render() {
     const {
-      projects: { loading, project },
+      projects: { loading, project, projectsImages },
       classes,
       users
     } = this.props;
+    const { zoomDialog } = this.state;
 
     const usernameAvailable =
       !isEmpty(users) && users.some(user => user.id === project.userId);
+
+    const projectImagesMetadata = projectsImages.filter(
+      _project => _project.id === project.id
+    );
+
+    const projectImages =
+      projectImagesMetadata.length > 0
+        ? projectImagesMetadata[0].images.map((img, i) => ({
+            title: project.imagesWithStorageRefs[i].title,
+            url: img
+          }))
+        : [];
+
+    const dialogZoomViewContent = (
+      <Dialog
+        open={zoomDialog.open}
+        onClose={this.handleZoomClose}
+        maxWidth="md"
+      >
+        <DialogContent>
+          {zoomDialog.currentImg && (
+            <img
+              src={zoomDialog.currentImg.url}
+              alt={zoomDialog.currentImg.title}
+              style={{ width: '100%' }}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={this.handleZoomClose}
+            color="inherit"
+            className={classes.whiteText}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
 
     const content =
       loading || isEmpty(project.createdAt) || !usernameAvailable ? (
@@ -46,19 +154,54 @@ export class Project extends Component {
         <GridContainer>
           <Grid item>
             <Paper className={classes.paper}>
-              <Typography variant="caption">
+              <Typography variant="body2">
                 {moment(project.createdAt.toDate()).calendar() +
                   ' by ' +
                   users.filter(user => user.id === project.userId)[0].username}
               </Typography>
               <Typography
-                variant="h2"
+                variant="h3"
                 gutterBottom
                 align="center"
                 className={classNames(classes.title, classes.primary)}
               >
                 {project.title}
               </Typography>
+              <Typography variant="subtitle1">{project.description}</Typography>
+              {!isEmpty(project.tags) && (
+                <div className={classes.tags}>
+                  {project.tags.map((tag, i) => (
+                    <Chip key={i} label={tag} className={classes.chip} />
+                  ))}
+                </div>
+              )}
+              {!isEmpty(projectImages) ? (
+                <div className={classes.images}>
+                  <GridList className={classes.gridList}>
+                    {projectImages.map((img, i) => (
+                      <GridListTile key={i}>
+                        <img
+                          src={img.url}
+                          alt={img.title}
+                          onClick={this.handleZoomOpen.bind(this, img)}
+                          style={{ cursor: 'pointer' }}
+                        />
+
+                        <GridListTileBar
+                          title={img.title}
+                          classes={{
+                            root: classes.titleBar,
+                            title: classes.title
+                          }}
+                        />
+                      </GridListTile>
+                    ))}
+                  </GridList>
+                </div>
+              ) : !isEmpty(project.imagesWithStorageRefs) ? (
+                <Spinner />
+              ) : null}
+              {dialogZoomViewContent}
             </Paper>
           </Grid>
         </GridContainer>
