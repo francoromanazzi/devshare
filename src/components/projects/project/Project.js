@@ -34,6 +34,9 @@ const styles = theme => ({
   primary: {
     color: theme.palette.primary.main
   },
+  secondary: {
+    color: theme.palette.secondary.dark
+  },
   title: {
     marginBottom: theme.spacing.unit * 4
   },
@@ -84,6 +87,14 @@ const styles = theme => ({
   },
   header: {
     marginBottom: theme.spacing.unit * 2
+  },
+  paperLight: {
+    ...theme.customs.paper,
+    paddingTop: theme.spacing.unit * 2,
+    marginTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 2,
+    backgroundColor: theme.palette.background.paperLight
   }
 });
 
@@ -266,6 +277,35 @@ export class Project extends Component {
               ) : !isEmpty(project.imagesWithStorageRefs) ? (
                 <Spinner />
               ) : null}
+              <Paper className={classes.paperLight}>
+                {project.contributorsChecked ? (
+                  <React.Fragment>
+                    <Typography
+                      className={classNames(classes.secondary)}
+                      color="inherit"
+                      variant="h6"
+                    >
+                      Looking for contributors!
+                    </Typography>
+                    <Typography
+                      className={classes.whiteText}
+                      color="inherit"
+                      variant="body1"
+                    >
+                      {project.contributorsDescription}
+                    </Typography>
+                  </React.Fragment>
+                ) : (
+                  <Typography
+                    className={classNames(classes.secondary)}
+                    color="inherit"
+                    variant="h6"
+                  >
+                    Not looking for contributors
+                  </Typography>
+                )}
+              </Paper>
+
               {dialogZoomViewContent}
             </Paper>
           </Grid>

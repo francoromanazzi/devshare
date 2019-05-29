@@ -66,6 +66,12 @@ const styles = theme => ({
   titleBar: {
     background:
       'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 70%, rgba(0,0,0,0) 100%)'
+  },
+  header: {
+    marginBottom: theme.spacing.unit * 1
+  },
+  mainTitle: {
+    marginBottom: theme.spacing.unit * 1
   }
 });
 
@@ -142,10 +148,10 @@ export class ProjectItem extends Component {
 
     return (
       <Paper className={classes.paper}>
-        <Typography variant="caption">
+        <Typography variant="caption" className={classes.header}>
           {moment(project.createdAt.toDate()).calendar() + ' by ' + username}
         </Typography>
-        <Typography variant="h4" color="inherit">
+        <Typography variant="h4" color="inherit" className={classes.mainTitle}>
           <span
             className={classes.primaryFadeOut}
             onClick={() => history.push(`/project/${project.id}`)}

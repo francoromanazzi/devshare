@@ -18,7 +18,7 @@ export default createMuiTheme({
       light1: '#29374A',
       light2: '#43526D',
       paper: '#43526D',
-      paperLight: '#56698c'
+      paperLight: '#5b6f91'
     },
     common: {
       gray: '#B0B0B0'
