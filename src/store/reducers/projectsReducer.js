@@ -23,8 +23,11 @@ const initState = {
     description: '',
     images: [],
     tags: [],
+    createdAt: {},
     contributorsChecked: false,
-    contributorsDescription: ''
+    contributorsDescription: '',
+    userId: '',
+    username: ''
   },
   loading: false
 };

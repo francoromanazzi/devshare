@@ -122,7 +122,7 @@ export class PrimarySearchAppBar extends Component {
   };
 
   render() {
-    const { classes, auth } = this.props;
+    const { classes, auth, history } = this.props;
     const { menuOpen } = this.state;
 
     const content = auth.isEmpty ? <GuestLinks /> : <AuthLinks />;
@@ -168,20 +168,12 @@ export class PrimarySearchAppBar extends Component {
         >
           <div className={classes.list}>
             <List>
-              <ListItem button>
+              <ListItem button onClick={() => history.push('/')}>
                 <ListItemIcon>
                   <Icon className={'fas fa-home'} />
                 </ListItemIcon>
                 <ListItemText primary="Home" />
               </ListItem>
-              {['Inbox', 'Starred', 'Send email', 'Drafts'].map(text => (
-                <ListItem button key={text}>
-                  <ListItemIcon>
-                    <SearchIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              ))}
             </List>
             <Divider />
             <List>

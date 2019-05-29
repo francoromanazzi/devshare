@@ -9,6 +9,7 @@ import Navbar from './components/layout/navbar/Navbar';
 import Login from './components/auth/Login';
 import Landing from './components/landing/Landing';
 import Dashboard from './components/dashboard/Dashboard';
+import Project from './components/projects/project/Project';
 import AddProject from './components/projects/add-project/AddProject';
 import EditProject from './components/projects/edit-project/EditProject';
 import NotFound from './components/not-found/NotFound';
@@ -28,12 +29,13 @@ class App extends Component {
             <Route exact path="/" component={NotAuth(Landing)} />
             <Route exact path="/login" component={NotAuth(Login)} />
             <Route exact path="/dashboard" component={Auth(Dashboard)} />
-            <Route exact path="/projects/add" component={Auth(AddProject)} />
+            <Route exact path="/project/add" component={Auth(AddProject)} />
             <Route
               exact
-              path="/projects/:projectId"
+              path="/project/edit/:projectId"
               component={Auth(EditProject)}
             />
+            <Route exact path="/project/:projectId" component={Auth(Project)} />
             <Route component={NotFound} />
           </Switch>
         </div>

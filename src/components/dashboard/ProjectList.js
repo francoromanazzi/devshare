@@ -4,8 +4,11 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withFirebase, withFirestore } from 'react-redux-firebase';
 
+import isEmpty from '../../utils/is-empty';
+
 import { getProjects } from '../../store/actions/projectsActions';
 
+import Spinner from '../common/spinner/Spinner';
 import { withStyles } from '@material-ui/core';
 import ProjectItem from './ProjectItem';
 
@@ -25,13 +28,24 @@ export class ProjectList extends Component {
   }
 
   render() {
-    const { classes, projects } = this.props;
+    const { classes, projects, users } = this.props;
     return (
       <div className={classes.root}>
-        {projects &&
-          projects.map(project => (
-            <ProjectItem key={project.id} project={project} />
-          ))}
+        {isEmpty(projects) || isEmpty(users) ? (
+          <Spinner />
+        ) : (
+          projects.map(project => {
+            const username = users.filter(user => user.id === project.userId)[0]
+              .username;
+            return (
+              <ProjectItem
+                key={project.id}
+                project={project}
+                username={username}
+              />
+            );
+          })
+        )}
       </div>
     );
   }
@@ -41,11 +55,13 @@ ProjectList.propTypes = {
   classes: PropTypes.object.isRequired,
   firebase: PropTypes.object.isRequired,
   firestore: PropTypes.object.isRequired,
-  projects: PropTypes.array
+  projects: PropTypes.array,
+  users: PropTypes.array
 };
 
 const mapStateToProps = state => ({
-  projects: state.firestore.ordered.projects
+  projects: state.firestore.ordered.projects,
+  users: state.firestore.ordered.users
 });
 
 const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({

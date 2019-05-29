@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 import isEmpty from '../../utils/is-empty';
 
@@ -19,6 +21,7 @@ import {
   Button
 } from '@material-ui/core';
 import Spinner from '../common/spinner/Spinner';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const styles = theme => ({
   paper: {
@@ -26,6 +29,12 @@ const styles = theme => ({
   },
   primary: {
     color: theme.palette.primary.main
+  },
+  primaryFadeOut: {
+    color: theme.palette.primary.main,
+    '&:hover': {
+      color: fade(theme.palette.primary.main, 0.25)
+    }
   },
   tags: {
     display: 'flex',
@@ -89,7 +98,7 @@ export class ProjectItem extends Component {
   };
 
   render() {
-    const { classes, project, projectsImages } = this.props;
+    const { classes, project, projectsImages, history, username } = this.props;
     const { zoomDialog } = this.state;
 
     const projectImagesMetadata = projectsImages.filter(
@@ -133,8 +142,17 @@ export class ProjectItem extends Component {
 
     return (
       <Paper className={classes.paper}>
-        <Typography variant="h4" color="inherit" className={classes.primary}>
-          {project.title}
+        <Typography variant="caption">
+          {moment(project.createdAt.toDate()).calendar() + ' by ' + username}
+        </Typography>
+        <Typography variant="h4" color="inherit">
+          <span
+            className={classes.primaryFadeOut}
+            onClick={() => history.push(`/project/${project.id}`)}
+            style={{ cursor: 'pointer' }}
+          >
+            {project.title}
+          </span>
         </Typography>
         <Typography variant="subtitle1">{project.description}</Typography>
         {!isEmpty(project.tags) && (
@@ -178,7 +196,8 @@ export class ProjectItem extends Component {
 
 ProjectItem.propTypes = {
   classes: PropTypes.object.isRequired,
-  project: PropTypes.object
+  project: PropTypes.object,
+  username: PropTypes.string.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -187,5 +206,6 @@ const mapStateToProps = state => ({
 
 export default compose(
   withStyles(styles),
+  withRouter,
   connect(mapStateToProps)
 )(ProjectItem);

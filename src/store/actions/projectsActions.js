@@ -206,6 +206,37 @@ export const addNewProject = (newProject, history, { firebase, firestore }) => (
     );
 };
 
+const getProjectImages = (project, firebase, dispatch) => {
+  const images = project.imagesWithStorageRefs;
+  if (images.length > 0) {
+    Promise.all(
+      images.map(img => {
+        return firebase
+          .storage()
+          .ref(img.storageRef)
+          .getDownloadURL();
+      })
+    )
+      .then(res => {
+        dispatch({
+          type: PROJECT_IMAGES_URLS,
+          payload: { id: project.id, images: res }
+        });
+      })
+      .catch(error => {
+        dispatch({
+          type: GET_ERRORS,
+          payload: { error }
+        });
+      });
+  }
+};
+
+const getProjectUsername = (project, firestore) => {
+  const { userId } = project;
+  firestore.get({ collection: 'users', doc: userId });
+};
+
 // Get all projects from firestore
 export const getProjects = ({ firebase, firestore }) => (
   dispatch,
@@ -216,31 +247,11 @@ export const getProjects = ({ firebase, firestore }) => (
     { collection: 'projects', orderBy: ['createdAt', 'desc'] },
     () => {
       const { projects } = getState().firestore.ordered;
-      for (let project of projects) {
-        const images = project.imagesWithStorageRefs;
-        if (images.length > 0) {
-          Promise.all(
-            images.map(img => {
-              return firebase
-                .storage()
-                .ref(img.storageRef)
-                .getDownloadURL();
-            })
-          )
-            .then(res => {
-              dispatch({
-                type: PROJECT_IMAGES_URLS,
-                payload: { id: project.id, images: res }
-              });
-            })
-            .catch(error => {
-              dispatch({
-                type: GET_ERRORS,
-                payload: { error }
-              });
-            });
-        }
-      }
+      projects.forEach(project => {
+        getProjectImages(project, firebase, dispatch);
+        getProjectUsername(project, firestore);
+      });
+      dispatch(setProjectsLoaded());
     },
     error => {
       dispatch({
@@ -249,6 +260,34 @@ export const getProjects = ({ firebase, firestore }) => (
       });
     }
   );
+};
+
+// Get a single project from firestore
+export const getProject = (projectId, { firebase, firestore }) => (
+  dispatch,
+  getState
+) => {
+  dispatch(clearProject());
+  dispatch(setProjectsLoading());
+  firestore
+    .get({ collection: 'projects', doc: projectId.toString() })
+    .then(() => {
+      const project = getState().firestore.ordered.projects.filter(
+        project => project.id === projectId
+      )[0];
+      getProjectImages(project, firebase, dispatch);
+      getProjectUsername(project, firestore);
+      dispatch({
+        type: GET_PROJECT,
+        payload: { project }
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: { err }
+      });
+    });
 };
 
 // Remove tag from tags array
