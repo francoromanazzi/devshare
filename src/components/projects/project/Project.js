@@ -24,7 +24,9 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  IconButton,
+  Icon
 } from '@material-ui/core';
 
 const styles = theme => ({
@@ -62,6 +64,26 @@ const styles = theme => ({
   titleBar: {
     background:
       'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.75) 70%, rgba(0,0,0,0) 100%)'
+  },
+  githubButton: {
+    //backgroundColor: theme.palette.common.white
+  },
+  githubIcon: {
+    color: theme.palette.common.black,
+    fontSize: '125%'
+  },
+  websiteButton: {
+    marginRight: theme.spacing.unit
+  },
+  websiteIcon: {
+    color: theme.palette.common.white,
+    fontSize: '125%'
+  },
+  grow: {
+    flexGrow: 1
+  },
+  header: {
+    marginBottom: theme.spacing.unit * 2
   }
 });
 
@@ -154,11 +176,54 @@ export class Project extends Component {
         <GridContainer>
           <Grid item>
             <Paper className={classes.paper}>
-              <Typography variant="body2">
-                {moment(project.createdAt.toDate()).calendar() +
-                  ' by ' +
-                  users.filter(user => user.id === project.userId)[0].username}
-              </Typography>
+              <Grid container className={classes.header}>
+                <Grid item>
+                  <Typography variant="body2" style={{ paddingTop: '16px' }}>
+                    {moment(project.createdAt.toDate()).calendar() +
+                      ' by ' +
+                      users.filter(user => user.id === project.userId)[0]
+                        .username}
+                  </Typography>
+                </Grid>
+                <div className={classes.grow} />
+                {!isEmpty(project.liveWebsiteUrl) && (
+                  <IconButton color="inherit" className={classes.websiteButton}>
+                    <a
+                      href={project.liveWebsiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Icon
+                        className={classNames(
+                          'fas fa-globe',
+                          classes.websiteIcon
+                        )}
+                      />
+                    </a>
+                  </IconButton>
+                )}
+                <Grid item>
+                  {!isEmpty(project.repoUrl) && (
+                    <IconButton
+                      color="inherit"
+                      className={classes.githubButton}
+                    >
+                      <a
+                        href={project.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Icon
+                          className={classNames(
+                            'fab fa-github',
+                            classes.githubIcon
+                          )}
+                        />
+                      </a>
+                    </IconButton>
+                  )}
+                </Grid>
+              </Grid>
               <Typography
                 variant="h3"
                 gutterBottom
