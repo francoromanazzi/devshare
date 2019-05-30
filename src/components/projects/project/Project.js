@@ -14,6 +14,7 @@ import Spinner from '../../common/spinner/Spinner';
 import GridContainer from '../../common/grid-container/GridContainer';
 import {
   withStyles,
+  withWidth,
   Grid,
   Paper,
   Typography,
@@ -83,7 +84,9 @@ const styles = theme => ({
     fontSize: '125%'
   },
   grow: {
-    flexGrow: 1
+    [theme.breakpoints.up('sm')]: {
+      flexGrow: 1
+    }
   },
   header: {
     marginBottom: theme.spacing.unit * 2
@@ -95,6 +98,12 @@ const styles = theme => ({
     paddingBottom: theme.spacing.unit * 2,
     marginBottom: theme.spacing.unit * 2,
     backgroundColor: theme.palette.background.paperLight
+  },
+  createdBy: {
+    paddingTop: theme.spacing.unit * 2,
+    [theme.breakpoints.only('xs')]: {
+      marginBottom: theme.spacing.unit * 2
+    }
   }
 });
 
@@ -134,7 +143,8 @@ export class Project extends Component {
     const {
       projects: { loading, project, projectsImages },
       classes,
-      users
+      users,
+      width
     } = this.props;
     const { zoomDialog } = this.state;
 
@@ -187,52 +197,62 @@ export class Project extends Component {
         <GridContainer>
           <Grid item>
             <Paper className={classes.paper}>
-              <Grid container className={classes.header}>
-                <Grid item>
-                  <Typography variant="body2" style={{ paddingTop: '16px' }}>
+              <Grid container className={classes.header} justify="flex-end">
+                <Grid item xs={12} sm={7}>
+                  <Typography variant="body2" className={classes.createdBy}>
                     {moment(project.createdAt.toDate()).calendar() +
                       ' by ' +
                       users.filter(user => user.id === project.userId)[0]
                         .username}
                   </Typography>
                 </Grid>
-                <div className={classes.grow} />
-                {!isEmpty(project.liveWebsiteUrl) && (
-                  <IconButton color="inherit" className={classes.websiteButton}>
-                    <a
-                      href={project.liveWebsiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Icon
-                        className={classNames(
-                          'fas fa-globe',
-                          classes.websiteIcon
-                        )}
-                      />
-                    </a>
-                  </IconButton>
-                )}
-                <Grid item>
-                  {!isEmpty(project.repoUrl) && (
-                    <IconButton
-                      color="inherit"
-                      className={classes.githubButton}
-                    >
-                      <a
-                        href={project.repoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+
+                <Grid item xs={12} sm={5}>
+                  <Grid
+                    container
+                    alignItems="flex-start"
+                    justify={width === 'xs' ? 'flex-start' : 'flex-end'}
+                  >
+                    {!isEmpty(project.liveWebsiteUrl) && (
+                      <IconButton
+                        color="inherit"
+                        className={classes.websiteButton}
                       >
-                        <Icon
-                          className={classNames(
-                            'fab fa-github',
-                            classes.githubIcon
-                          )}
-                        />
-                      </a>
-                    </IconButton>
-                  )}
+                        <a
+                          href={project.liveWebsiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Icon
+                            className={classNames(
+                              'fas fa-globe',
+                              classes.websiteIcon
+                            )}
+                          />
+                        </a>
+                      </IconButton>
+                    )}
+
+                    {!isEmpty(project.repoUrl) && (
+                      <IconButton
+                        color="inherit"
+                        className={classes.githubButton}
+                      >
+                        <a
+                          href={project.repoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Icon
+                            className={classNames(
+                              'fab fa-github',
+                              classes.githubIcon
+                            )}
+                          />
+                        </a>
+                      </IconButton>
+                    )}
+                  </Grid>
                 </Grid>
               </Grid>
               <Typography
@@ -336,6 +356,7 @@ const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({
 export default compose(
   withFirebase,
   withFirestore,
+  withWidth(),
   withStyles(styles),
   connect(
     mapStateToProps,

@@ -10,7 +10,6 @@ import {
   Stepper,
   Step,
   StepLabel,
-  StepButton,
   Typography,
   Grid
 } from '@material-ui/core';

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 import { withStyles, Grid, Paper, Typography, Button } from '@material-ui/core';
 import GridContainer from '../common/grid-container/GridContainer';
