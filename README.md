@@ -24,7 +24,7 @@ Live demo: https://devshare-8832f.firebaseapp.com/
 - [x] Landing page
 - [x] Dashboard
 - [x] Add new project
-- [ ] Search
+- [x] Search
 - [ ] Profiles
 - [ ] Edit project
 - [ ] Delete project
