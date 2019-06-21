@@ -62,6 +62,15 @@ const styles = theme => ({
     marginLeft: theme.spacing.unit * 3,
     width: 'auto'
   },
+  searchMobile: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25)
+    },
+    width: 'auto'
+  },
   searchIcon: {
     width: theme.spacing.unit * 9,
     height: '100%',
@@ -87,6 +96,17 @@ const styles = theme => ({
       '&:focus': {
         width: 220
       }
+    }
+  },
+  inputInputMobile: {
+    paddingTop: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit,
+    transition: theme.transitions.create('width'),
+    width: 100,
+    '&:focus': {
+      width: 140
     }
   },
   sectionDesktop: {
@@ -138,7 +158,8 @@ export class PrimarySearchAppBar extends Component {
   state = {
     menuOpen: false,
     search: '',
-    searchResultsOpen: false
+    searchResultsOpen: false,
+    showSearchIconInMobile: true
   };
 
   toggleDrawer = value => {
@@ -156,7 +177,11 @@ export class PrimarySearchAppBar extends Component {
   handleSearchResultsClose = event => {
     if (this.searchResultsAnchorRef.contains(event.target)) return;
 
-    this.setState({ searchResultsOpen: false });
+    this.setState({ searchResultsOpen: false, showSearchIconInMobile: true });
+  };
+
+  handleSearchIconClickInMobile = () => {
+    this.setState({ showSearchIconInMobile: false });
   };
 
   render() {
@@ -167,7 +192,12 @@ export class PrimarySearchAppBar extends Component {
       searchedProjects,
       projectsLoading
     } = this.props;
-    const { menuOpen, search, searchResultsOpen } = this.state;
+    const {
+      menuOpen,
+      search,
+      searchResultsOpen,
+      showSearchIconInMobile
+    } = this.state;
 
     const content = auth.isEmpty ? <GuestLinks /> : <AuthLinks />;
 
@@ -200,13 +230,32 @@ export class PrimarySearchAppBar extends Component {
       <div className={classes.sectionMobile}>
         <IconButton
           aria-haspopup="true"
-          onClick={() => {
-            console.log('search');
-          }}
+          onClick={this.handleSearchIconClickInMobile}
           color="inherit"
         >
           <SearchIcon />
         </IconButton>
+      </div>
+    );
+
+    const searchMobileExpanded = (
+      <div className={classes.searchMobile}>
+        {' '}
+        <InputBase
+          inputRef={node => {
+            this.searchResultsAnchorRef = node;
+          }}
+          aria-owns={searchResultsOpen ? 'search-results' : undefined}
+          aria-haspopup="true"
+          placeholder="Search…"
+          classes={{
+            root: classes.inputRoot,
+            input: classes.inputInputMobile
+          }}
+          inputProps={{ 'aria-label': 'Search' }}
+          value={search}
+          onChange={this.handleSearchChange}
+        />
       </div>
     );
 
@@ -315,7 +364,7 @@ export class PrimarySearchAppBar extends Component {
             {searchDesktop}
             {searchedProjectsResults}
             <div className={classes.grow} />
-            {searchMobile}
+            {showSearchIconInMobile ? searchMobile : searchMobileExpanded}
             {content}
           </Toolbar>
         </AppBar>
