@@ -139,6 +139,11 @@ export class Project extends Component {
     this.props.getProject(this.props.match.params.projectId);
   }
 
+  componentWillReceiveProps(props) {
+    if (props.match.params.projectId !== this.props.match.params.projectId)
+      this.props.getProject(props.match.params.projectId);
+  }
+
   render() {
     const {
       projects: { loading, project, projectsImages },

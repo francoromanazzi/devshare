@@ -10,12 +10,15 @@ import {
   ADD_IMAGE,
   CLEAR_PROJECT,
   CHANGE_IMAGE_TITLE,
-  PROJECT_IMAGES_URLS
+  PROJECT_IMAGES_URLS,
+  GET_SEARCHED_PROJECT,
+  SEARCHING_PROJECTS
 } from '../actions/types';
 
 const initState = {
   projects: [],
   projectsImages: [],
+  searchedProjects: [],
   project: {
     repoUrl: '',
     liveWebsiteUrl: '',
@@ -29,7 +32,8 @@ const initState = {
     userId: '',
     username: ''
   },
-  loading: false
+  loading: false,
+  searchingProjects: false
 };
 
 export default function(state = initState, action) {
@@ -131,6 +135,17 @@ export default function(state = initState, action) {
         ...state,
         projectsImages,
         loading: false
+      };
+    case GET_SEARCHED_PROJECT:
+      return {
+        ...state,
+        searchedProjects: action.payload,
+        searchingProjects: false
+      };
+    case SEARCHING_PROJECTS:
+      return {
+        ...state,
+        searchingProjects: true
       };
     default:
       return state;

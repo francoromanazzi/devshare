@@ -12,7 +12,9 @@ import {
   ADD_IMAGE,
   CLEAR_PROJECT,
   CHANGE_IMAGE_TITLE,
-  PROJECT_IMAGES_URLS
+  PROJECT_IMAGES_URLS,
+  GET_SEARCHED_PROJECT,
+  SEARCHING_PROJECTS
 } from '../actions/types';
 
 // Set github repo url when adding a new project
@@ -328,6 +330,43 @@ export const changeImageTitle = (oldTitle, newTitle) => {
     type: CHANGE_IMAGE_TITLE,
     payload: { oldTitle, newTitle }
   };
+};
+
+// Search
+export const searchInput = (search, { firebase, firestore }) => (
+  dispatch,
+  getState
+) => {
+  dispatch({
+    type: SEARCHING_PROJECTS
+  });
+
+  firestore.onSnapshot(
+    { collection: 'projects', orderBy: ['createdAt', 'desc'] },
+    () => {
+      const { projects } = getState().firestore.ordered;
+
+      search = search.toLowerCase();
+      const projectsFiltered = projects.filter(
+        project =>
+          project.title.toLowerCase().includes(search) ||
+          project.description.toLowerCase().includes(search) ||
+          project.repoUrl.toLowerCase().includes(search) ||
+          project.liveWebsiteUrl.toLowerCase().includes(search) ||
+          project.tags.some(tag => tag.toLowerCase().includes(search))
+      );
+      dispatch({
+        type: GET_SEARCHED_PROJECT,
+        payload: projectsFiltered
+      });
+    },
+    error => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: { error }
+      });
+    }
+  );
 };
 
 // Set loading state

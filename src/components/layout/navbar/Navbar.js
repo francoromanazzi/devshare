@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
+import { withFirebase, withFirestore } from 'react-redux-firebase';
 
 import {
   AppBar,
@@ -16,15 +17,24 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Icon
+  Icon,
+  Paper,
+  MenuList,
+  MenuItem,
+  Popper,
+  Grow
 } from '@material-ui/core/';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
+import Spinner from '../../common/spinner/Spinner';
 
 import AuthLinks from './AuthLinks';
 import GuestLinks from './GuestLinks';
+
+import { searchInput } from '../../../store/actions/projectsActions';
 
 const styles = theme => ({
   root: {
@@ -73,7 +83,10 @@ const styles = theme => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: 200
+      width: 140,
+      '&:focus': {
+        width: 220
+      }
     }
   },
   sectionDesktop: {
@@ -109,21 +122,52 @@ const styles = theme => ({
   },
   list: {
     width: 250
+  },
+  menu: {
+    marginTop: '38px'
+  },
+  menuPopover: {
+    backgroundColor: theme.palette.background.paper
+  },
+  noResultsFound: {
+    padding: theme.spacing.unit * 3
   }
 });
 
 export class PrimarySearchAppBar extends Component {
   state = {
-    menuOpen: false
+    menuOpen: false,
+    search: '',
+    searchResultsOpen: false
   };
 
   toggleDrawer = value => {
     this.setState({ menuOpen: value });
   };
 
+  handleSearchChange = event => {
+    this.setState({
+      search: event.target.value,
+      searchResultsOpen: true
+    });
+    this.props.searchInput(event.target.value);
+  };
+
+  handleSearchResultsClose = event => {
+    if (this.searchResultsAnchorRef.contains(event.target)) return;
+
+    this.setState({ searchResultsOpen: false });
+  };
+
   render() {
-    const { classes, auth, history } = this.props;
-    const { menuOpen } = this.state;
+    const {
+      classes,
+      auth,
+      history,
+      searchedProjects,
+      projectsLoading
+    } = this.props;
+    const { menuOpen, search, searchResultsOpen } = this.state;
 
     const content = auth.isEmpty ? <GuestLinks /> : <AuthLinks />;
 
@@ -134,11 +178,19 @@ export class PrimarySearchAppBar extends Component {
             <SearchIcon />
           </div>
           <InputBase
+            inputRef={node => {
+              this.searchResultsAnchorRef = node;
+            }}
+            aria-owns={searchResultsOpen ? 'search-results' : undefined}
+            aria-haspopup="true"
             placeholder="Search…"
             classes={{
               root: classes.inputRoot,
               input: classes.inputInput
             }}
+            inputProps={{ 'aria-label': 'Search' }}
+            value={search}
+            onChange={this.handleSearchChange}
           />
         </div>
       </div>
@@ -156,6 +208,49 @@ export class PrimarySearchAppBar extends Component {
           <SearchIcon />
         </IconButton>
       </div>
+    );
+
+    const searchedProjectsResults = (
+      <Popper
+        open={searchResultsOpen}
+        anchorEl={this.searchResultsAnchorRef}
+        transition
+        disablePortal
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === 'bottom' ? 'center top' : 'center bottom'
+            }}
+          >
+            <Paper id="search-results">
+              <ClickAwayListener onClickAway={this.handleSearchResultsClose}>
+                {projectsLoading ? (
+                  <Spinner />
+                ) : searchedProjects.length === 0 ? (
+                  <Typography variant="h5" className={classes.noResultsFound}>
+                    No results found
+                  </Typography>
+                ) : (
+                  <MenuList>
+                    {searchedProjects.map(project => (
+                      <MenuItem key={project.id}>
+                        <span
+                          onClick={() => history.push(`/project/${project.id}`)}
+                        >
+                          {project.title}
+                        </span>
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                )}
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
     );
 
     const menuDrawer = (
@@ -218,6 +313,7 @@ export class PrimarySearchAppBar extends Component {
               </Typography>
             </Link>
             {searchDesktop}
+            {searchedProjectsResults}
             <div className={classes.grow} />
             {searchMobile}
             {content}
@@ -231,16 +327,33 @@ export class PrimarySearchAppBar extends Component {
 PrimarySearchAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
+  searchInput: PropTypes.func.isRequired,
+  firebase: PropTypes.object.isRequired,
+  firestore: PropTypes.object.isRequired,
+  searchedProjects: PropTypes.array.isRequired,
+  projectsLoading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.firebase.auth,
-  profile: state.firebase.profile
+  profile: state.firebase.profile,
+  searchedProjects: state.projects.searchedProjects,
+  projectsLoading: state.projects.loading
+});
+
+const mapDispatchToProps = (dispatch, { firebase, firestore }) => ({
+  searchInput: (...args) =>
+    dispatch(searchInput(...args, { firebase, firestore }))
 });
 
 export default compose(
+  withFirebase,
+  withFirestore,
   withStyles(styles),
   withRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(PrimarySearchAppBar);
