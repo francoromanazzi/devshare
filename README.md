@@ -30,8 +30,8 @@ Live demo: https://devshare-8832f.firebaseapp.com/
 - [ ] Delete project
 - [ ] Comment on projects
 
-## Built with React. Completely serverless
-
+## Technology stack.
+ 
 - **Frontend**: React, Redux, Material-UI
 - **Backend**: Firebase (firestore, storage & hosting)
 - Github API
